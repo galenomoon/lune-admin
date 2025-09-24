@@ -1,5 +1,9 @@
 "use client";
-import { togglePaymentStatus, updatePayment } from "@/api/payment";
+import {
+  deletePayment,
+  togglePaymentStatus,
+  updatePayment,
+} from "@/api/payment";
 import { Payment } from "@/interfaces/payment";
 import {
   useMutation,
@@ -16,6 +20,7 @@ interface PaymentTabContextType {
   currentPayment: Payment | null;
   togglePaymentStatusMutation: UseMutationResult<void, Error, Payment>;
   updatePaymentMutation: UseMutationResult<void, Error, Payment>;
+  deletePaymentMutation: UseMutationResult<void, Error, Payment>;
 }
 
 export const PaymentTabContext = createContext<PaymentTabContextType>({
@@ -25,6 +30,7 @@ export const PaymentTabContext = createContext<PaymentTabContextType>({
   currentPayment: null,
   togglePaymentStatusMutation: {} as UseMutationResult<void, Error, Payment>,
   updatePaymentMutation: {} as UseMutationResult<void, Error, Payment>,
+  deletePaymentMutation: {} as UseMutationResult<void, Error, Payment>,
 });
 
 export const PaymentTabProvider = ({
@@ -41,8 +47,9 @@ export const PaymentTabProvider = ({
     mutationKey: ["toggle-payment"],
     mutationFn: (payment: Payment) => togglePaymentStatus(payment.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboardStats"] });
+      queryClient.invalidateQueries({ queryKey: ["students"]});      
+      queryClient.invalidateQueries({ queryKey: ["dashboardStats"]});
+
       toast.success("Pagamento atualizado com sucesso");
     },
     onError: () => toast.error("Erro ao atualizar pagamento"),
@@ -56,11 +63,24 @@ export const PaymentTabProvider = ({
         dueDate: payment.dueDate,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student"] });
+      queryClient.invalidateQueries({ queryKey: ["students"]});      
+      queryClient.invalidateQueries({ queryKey: ["dashboardStats"]});
       toast.success("Pagamento atualizado com sucesso");
       closeEditPaymentForm();
     },
     onError: () => toast.error("Erro ao atualizar pagamento"),
+  });
+
+  const deletePaymentMutation = useMutation({
+    mutationKey: ["delete-payment"],
+    mutationFn: (payment: Payment) => deletePayment(payment.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"]});      
+      queryClient.invalidateQueries({ queryKey: ["dashboardStats"]});
+      closeEditPaymentForm();
+      toast.success("Pagamento deletado com sucesso");
+    },
+    onError: () => toast.error("Erro ao deletar pagamento"),
   });
 
   const openEditPaymentForm = (payment: Payment) => {
@@ -81,6 +101,7 @@ export const PaymentTabProvider = ({
         closeEditPaymentForm,
         currentPayment,
         updatePaymentMutation,
+        deletePaymentMutation,
         togglePaymentStatusMutation,
       }}
     >

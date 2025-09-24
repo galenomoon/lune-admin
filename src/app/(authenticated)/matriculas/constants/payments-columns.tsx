@@ -47,11 +47,13 @@ export const paymentsColumns: ColumnDef<Payment>[] = [
         PENDING: "bg-yellow-50 border-yellow-500 text-yellow-500",
         PAID: "bg-green-50 border-green-500 text-green-500",
         CANCELED: "bg-red-50 border-red-500 text-red-500",
+        OVERDUE: "bg-red-50 border-red-500 text-red-500",
       };
       const statusLabel = {
         PENDING: "Pendente",
         PAID: "Pago",
         CANCELED: "Cancelado",
+        OVERDUE: "Vencido",
       };
       return (
         <Badge
@@ -99,11 +101,13 @@ export const paymentColumnsDashboard = [
       const statusColors = {
         PENDING: "bg-yellow-50 border-yellow-500 text-yellow-500",
         PAID: "bg-green-50 border-green-500 text-green-500",
+        OVERDUE: "bg-red-50 border-red-500 text-red-500",
         CANCELED: "bg-red-50 border-red-500 text-red-500",
       };
       const statusLabel = {
         PENDING: "Pendente",
         PAID: "Pago",
+        OVERDUE: "Vencido",
         CANCELED: "Cancelado",
       };
       return (
@@ -119,6 +123,8 @@ export const paymentColumnsDashboard = [
   {
     accessorKey: "actions",
     header: "Ações",
-    cell: ({ row }: { row: Row<Payment> }) => <ActionsPaymentButtons hideEditButton payment={row.original} />,
+    cell: ({ row }: { row: Row<Payment> }) => (
+      <ActionsPaymentButtons hideEditButton payment={row.original} />
+    ),
   },
 ];

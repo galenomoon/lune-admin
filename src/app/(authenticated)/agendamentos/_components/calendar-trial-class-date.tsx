@@ -1,6 +1,8 @@
+"use client";
 import React from "react";
 import { TrialStudent } from "@/interfaces/trial-student";
 import { format, isSameDay, isSameMonth, isToday } from "date-fns";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const getEventsForDate = (events: TrialStudent[], date: Date) => {
   return events.filter((event) => isSameDay(new Date(event.date), date));
@@ -30,6 +32,7 @@ export default function CalendarTrialClassDate({
   const isCurrentMonth = isSameMonth(day, currentMonth);
   const isSelected = selectedDate && isSameDay(day, selectedDate);
   const isCurrentDay = isToday(day);
+  const { toggleSidebar, open } = useSidebar();
 
   return (
     <div
@@ -43,7 +46,12 @@ export default function CalendarTrialClassDate({
       ${isSelected ? "bg-purple-50 border-purple-300" : ""}
       ${isCurrentDay ? "bg-blue-50" : ""}
     `}
-      onClick={() => onDateClick(day)}
+      onClick={() => {
+        onDateClick(day);
+        if (!open) {
+          toggleSidebar();
+        }
+      }}
     >
       <div className="flex items-center justify-between mb-1">
         <span

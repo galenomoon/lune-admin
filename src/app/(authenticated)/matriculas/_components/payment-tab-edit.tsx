@@ -12,8 +12,12 @@ import { currencyToFloat, floatToCurrency } from "@/utils/parse-currency";
 import { dateStringToDate, dateToString } from "@/utils/parse-date";
 
 const PaymentTabEdit = () => {
-  const { currentPayment, closeEditPaymentForm, updatePaymentMutation } =
-    usePaymentTab();
+  const {
+    currentPayment,
+    closeEditPaymentForm,
+    updatePaymentMutation,
+    deletePaymentMutation,
+  } = usePaymentTab();
   const form = useForm<PaymentSchema>({
     resolver: zodResolver(paymentSchema),
     values: {
@@ -70,6 +74,22 @@ const PaymentTabEdit = () => {
 
           <section className="flex gap-2 justify-end items-end h-full">
             <Button
+              disabled={
+                updatePaymentMutation.isPending ||
+                deletePaymentMutation.isPending
+              }
+              className="w-30"
+              variant="destructive"
+              type="button"
+              onClick={() => deletePaymentMutation.mutate(currentPayment!)}
+            >
+              {deletePaymentMutation.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Deletar"
+              )}
+            </Button>
+            <Button
               disabled={updatePaymentMutation.isPending}
               className="w-30"
               type="submit"
@@ -79,14 +99,6 @@ const PaymentTabEdit = () => {
               ) : (
                 "Salvar"
               )}
-            </Button>
-            <Button
-              disabled={updatePaymentMutation.isPending}
-              className="w-30"
-              variant="outline"
-              onClick={() => form.reset()}
-            >
-              Cancelar
             </Button>
           </section>
         </form>

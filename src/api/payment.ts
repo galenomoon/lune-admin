@@ -12,3 +12,8 @@ export const updatePayment = async (
   const { data } = await api.patch("api/v1/payments/" + paymentId, payload);
   return data;
 };
+
+export const deletePayment = async (paymentId: string) => {
+  const { data } = await api.delete("api/v1/payments/" + paymentId);
+  return data;
+};
