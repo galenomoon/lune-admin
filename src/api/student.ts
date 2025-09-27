@@ -10,3 +10,8 @@ export const getStudentById = async (id: string) => {
   const { data } = await api.get<StudentDetails>("api/v2/students/" + id);
   return data;
 };
+
+export const getEnrollmentFormData = async () => {
+  const { data } = await api.get("api/v1/students/enrollment-form-data");
+  return data;
+};

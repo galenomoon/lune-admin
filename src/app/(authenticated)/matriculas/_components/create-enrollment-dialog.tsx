@@ -23,9 +23,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import PersonalDataForm from "@/app/(authenticated)/matriculas/_components/personal-data-form";
 import AddressForm from "@/app/(authenticated)/matriculas/_components/address-form";
 import EnrollmentForm from "@/app/(authenticated)/matriculas/_components/enrollment-form";
+import { createEnrollment } from "@/api/enrollment";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { dateStringToDate } from "@/utils/parse-date";
+import { useCep } from "@/hooks/use-cep";
+import { CreateEnrollmentPayload } from "@/interfaces/enrollment";
 
 export function CreateEnrollmentDialog() {
   const [activeTab, setActiveTab] = useState("personal-data");
+  const [isOpen, setIsOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const personalDataForm = useForm<PersonalDataSchema>({
     resolver: zodResolver(personalDataSchema),
@@ -62,17 +70,82 @@ export function CreateEnrollmentDialog() {
       planId: "",
       paymentDay: "",
       classId: "",
+      modalityId: "",
       signature: "",
     },
   });
 
+  const createEnrollmentMutation = useMutation({
+    mutationFn: createEnrollment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      toast.success("Matrícula criada com sucesso!");
+      setIsOpen(false);
+      resetForms();
+    },
+    onError: (error) => {
+      toast.error("Erro ao criar matrícula");
+      console.error(error);
+    },
+  });
+
+  const resetForms = () => {
+    personalDataForm.reset();
+    addressForm.reset();
+    enrollmentForm.reset();
+    setActiveTab("personal-data");
+  };
+
+  const handleEnrollmentSubmit = (data: EnrollmentSchema) => {
+    const personalData = personalDataForm.getValues();
+    const address = addressForm.getValues();
+
+    const enrollmentData = {
+      student: {
+        firstName: personalData.firstName,
+        lastName: personalData.lastName,
+        birthDate: dateStringToDate(personalData.birthDate) || new Date(),
+        cpf: personalData.cpf,
+        rg: personalData.rg,
+        phone: personalData.phone,
+        instagram: personalData.instagram,
+        email: personalData.email,
+        obs: personalData.obs,
+        password: personalData.cpf.replace(/\D/g, "").slice(0, 4),
+      },
+      address,
+      enrollment: {
+        startDate: new Date(data.startDate),
+        planId: data.planId,
+        paymentDay: data.paymentDay,
+        classId: data.classId,
+        modalityId: data.modalityId,
+        signature: data.signature,
+      },
+    };
+
+    createEnrollmentMutation.mutate(enrollmentData as CreateEnrollmentPayload);
+  };
+
+  const cepValue = addressForm.watch("cep");
+
+  const shouldSearchCep =
+    !!cepValue && cepValue.replace(/\D/g, "").length === 8;
+
+  const { isLoading: cepLoading } = useCep({
+    cep: cepValue || "",
+    enabled: shouldSearchCep,
+    form: addressForm,
+  });
+
   return (
     <Dialog
-      onOpenChange={() => {
-        personalDataForm.reset();
-        addressForm.reset();
-        enrollmentForm.reset();
-        setActiveTab("personal-data");
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) {
+          resetForms();
+        }
       }}
     >
       <DialogTrigger asChild>
@@ -81,18 +154,18 @@ export function CreateEnrollmentDialog() {
           Nova Matrícula
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex flex-col min-w-4xl h-[560px]">
-        <DialogHeader className="h-fit">
+      <DialogContent className="flex flex-col min-w-4xl max-h-[90vh]">
+        <DialogHeader className="h-fit flex-shrink-0">
           <DialogTitle>Nova Matrícula</DialogTitle>
         </DialogHeader>
 
         <Tabs
           defaultValue="personal-data"
-          className="flex-1 flex-row gap-5"
+          className="flex-1 flex-row gap-5 min-h-0"
           value={activeTab}
           onValueChange={setActiveTab}
         >
-          <TabsList className="flex flex-col h-full justify-start gap-2 p-2">
+          <TabsList className="flex flex-col h-full justify-start gap-2 p-2 flex-shrink-0">
             <TabsTrigger
               className="max-h-fit w-full justify-start"
               value="personal-data"
@@ -115,24 +188,28 @@ export function CreateEnrollmentDialog() {
               Matrícula
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="personal-data">
-            <PersonalDataForm
-              form={personalDataForm}
-              onSubmit={() => setActiveTab("address")}
-            />
-          </TabsContent>
-          <TabsContent value="address">
-            <AddressForm
-              form={addressForm}
-              onSubmit={() => setActiveTab("enrollment")}
-            />
-          </TabsContent>
-          <TabsContent value="enrollment">
-            <EnrollmentForm
-              form={enrollmentForm}
-              onSubmit={() => setActiveTab("personal-data")}
-            />
-          </TabsContent>
+          <div className="flex-1 overflow-y-auto min-h-[60vh]">
+            <TabsContent value="personal-data" className="h-full">
+              <PersonalDataForm
+                form={personalDataForm}
+                onSubmit={() => setActiveTab("address")}
+              />
+            </TabsContent>
+            <TabsContent value="address" className="h-full">
+              <AddressForm
+                cepLoading={cepLoading}
+                form={addressForm}
+                onSubmit={() => setActiveTab("enrollment")}
+              />
+            </TabsContent>
+            <TabsContent value="enrollment" className="h-full">
+              <EnrollmentForm
+                form={enrollmentForm}
+                isCreateEnrollmentLoading={createEnrollmentMutation.isPending}
+                onSubmit={handleEnrollmentSubmit}
+              />
+            </TabsContent>
+          </div>
         </Tabs>
       </DialogContent>
     </Dialog>

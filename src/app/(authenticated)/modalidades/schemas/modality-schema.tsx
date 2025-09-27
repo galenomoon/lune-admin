@@ -1,9 +1,7 @@
 import { z } from "zod";
 
-const message = "Este campo é obrigatório";
-
 export const modalitySchema = z.object({
-  name: z.string().nonempty(message),
+  name: z.string().min(1, "Nome da modalidade é obrigatório"),
 });
 
 export type ModalitySchema = z.infer<typeof modalitySchema>;

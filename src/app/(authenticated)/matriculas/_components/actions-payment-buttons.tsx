@@ -28,8 +28,8 @@ export default function ActionsPaymentButtons({
           <Pencil className="w-4 h-4" />
         </Button>
       )}
-      {isPending ||
-        (isOverdue && (
+      {
+        ((isPending || isOverdue) && (
           <Button
             onClick={() => togglePaymentStatusMutation.mutate(payment)}
             variant="outline"

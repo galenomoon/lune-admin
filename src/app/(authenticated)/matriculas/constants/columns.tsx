@@ -8,6 +8,7 @@ const statusLabel = {
   PENDING: "Pendente",
   PAID: "Pago",
   CANCELED: "Cancelado",
+  OVERDUE: "Atrasado",
 };
 
 export const columns: ColumnDef<StudentTable>[] = [
@@ -45,7 +46,9 @@ export const columns: ColumnDef<StudentTable>[] = [
             row.original.status === "PAID" &&
               "border-green-500 bg-green-50 text-green-500",
             row.original.status === "CANCELED" &&
-              "border-red-500 bg-red-50 text-red-500"
+              "border-red-500 bg-red-50 text-red-500",
+            row.original.status === "OVERDUE" &&
+              "border-orange-500 bg-orange-50 text-orange-500"
           )}
         >
           {statusLabel[row.original.status]}

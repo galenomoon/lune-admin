@@ -63,6 +63,7 @@ export const PaymentTabProvider = ({
         dueDate: payment.dueDate,
       }),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student"]});      
       queryClient.invalidateQueries({ queryKey: ["students"]});      
       queryClient.invalidateQueries({ queryKey: ["dashboardStats"]});
       toast.success("Pagamento atualizado com sucesso");
@@ -75,6 +76,7 @@ export const PaymentTabProvider = ({
     mutationKey: ["delete-payment"],
     mutationFn: (payment: Payment) => deletePayment(payment.id),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student"]});      
       queryClient.invalidateQueries({ queryKey: ["students"]});      
       queryClient.invalidateQueries({ queryKey: ["dashboardStats"]});
       closeEditPaymentForm();

@@ -32,7 +32,7 @@ export default function RootLayout({
       >
         <TanstackProvider>
           <AuthContextProvider>{children}</AuthContextProvider>
-          <Toaster />
+          <Toaster position="top-right" />
         </TanstackProvider>
       </body>
     </html>

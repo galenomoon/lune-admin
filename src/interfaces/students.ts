@@ -7,7 +7,7 @@ export interface StudentTable {
   studentName: string;
   daysToExpire: string;
   phone: string;
-  status: "PENDING" | "PAID" | "CANCELED";
+  status: "PENDING" | "PAID" | "CANCELED" | "OVERDUE";
   student: Student;
 }
 
@@ -31,4 +31,17 @@ export interface StudentDetails {
   addresses: Address[];
   payments: Payment[];
   enrollments: Enrollment[];
+}
+
+export interface StudentCreateData {
+  firstName: string;
+  lastName: string;
+  birthDate: Date;
+  cpf: string;
+  rg: string;
+  phone: string;
+  instagram: string;
+  email: string;
+  obs: string;
+  password: string;
 }

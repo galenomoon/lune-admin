@@ -12,7 +12,6 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.log(error.response.status);
     if (error.response.status === 401) {
       destroyCookie(undefined, "token");
       window.location.href = "/login";

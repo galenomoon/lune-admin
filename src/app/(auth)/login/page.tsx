@@ -25,7 +25,7 @@ export default function Login() {
   };
 
   return (
-    <section className="flex flex-col justify-center items-center min-h-screen w-screen">
+    <section className="flex flex-col justify-start py-22 items-center min-h-screen w-screen">
       <Card className="w-[400px] max-w-md">
         <CardHeader>
           <CardTitle>Login</CardTitle>

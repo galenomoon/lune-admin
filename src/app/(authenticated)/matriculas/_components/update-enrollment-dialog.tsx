@@ -18,6 +18,7 @@ import {
   personalDataSchema,
   PersonalDataSchema,
 } from "@/schemas/enrollment";
+import { EnrollmentWithDetails } from "@/interfaces/enrollment";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PersonalDataForm from "../_components/personal-data-form";
@@ -29,6 +30,8 @@ import { dateToString } from "@/utils/parse-date";
 import { SkeletonWrapper } from "@/components/ui/skeleton-wrapper";
 import { EnrollmentFormSkeleton } from "@/components/ui/skeleton-form";
 import { PaymentsTab } from "../_components/payments-tab";
+import EnrollmentsTabEdit from "./enrollments-tab-edit";
+import { StudentDetails } from "@/interfaces/students";
 
 export function UpdateEnrollmentDialog({
   enrollment,
@@ -183,6 +186,7 @@ export function UpdateEnrollmentDialog({
             >
               <AddressForm
                 form={addressForm}
+                cepLoading={false}
                 onSubmit={() => setActiveTab("enrollment")}
               />
             </SkeletonWrapper>
@@ -200,13 +204,12 @@ export function UpdateEnrollmentDialog({
               isPending={isPending}
               SkeletonComponent={EnrollmentFormSkeleton}
             >
-              {/* <EnrollmentForm
-                form={enrollmentForm}
-                onSubmit={() => setActiveTab("personal-data")}
-              /> */}
-              <div className="p-4 text-center text-gray-500">
-                Formulário de matrícula em desenvolvimento
-              </div>
+              <EnrollmentsTabEdit
+                enrollments={
+                  (student?.enrollments as EnrollmentWithDetails[]) || []
+                }
+                studentData={student as StudentDetails}
+              />
             </SkeletonWrapper>
           </TabsContent>
         </Tabs>

@@ -1,18 +1,22 @@
-import { FormInput } from "@/components/forms/form-input";
+import React from "react";
+import { Loader2 } from "lucide-react";
 import { Form } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
-import { AddressSchema } from "@/schemas/enrollment";
-import React from "react";
 import { Button } from "@/components/ui/button";
+import { AddressSchema } from "@/schemas/enrollment";
+import { FormInput } from "@/components/forms/form-input";
 import { CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export default function AddressForm({
   form,
   onSubmit,
+  cepLoading,
 }: {
   form: UseFormReturn<AddressSchema>;
   onSubmit: (data: AddressSchema) => void;
+  cepLoading: boolean;
 }) {
+
   return (
     <Form {...form}>
       <form
@@ -26,6 +30,28 @@ export default function AddressForm({
               Preencha os campos abaixo para continuar
             </CardDescription>
           </CardHeader>
+          <div className="flex gap-4 mb-4">
+            <div className="flex-1">
+              <FormInput
+                name="cep"
+                control={form.control}
+                label="CEP"
+                placeholder="00000-000"
+                mask="99999-999"
+                maskOptions={{
+                  placeholder: "_____-___",
+                  showMaskOnHover: true,
+                }}
+              />
+              {cepLoading && (
+                <div className="flex items-center gap-2 mt-1 text-sm text-blue-600">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Buscando endereço...
+                </div>
+              )}
+            </div>
+          </div>
+
           <FormInput
             name="street"
             control={form.control}
@@ -57,19 +83,13 @@ export default function AddressForm({
               label="Estado"
               placeholder="Digite o estado"
             />
-            <FormInput
-              name="complement"
-              control={form.control}
-              label="Complemento"
-              placeholder="Digite o complemento"
-            />
-            <FormInput
-              name="cep"
-              control={form.control}
-              label="CEP"
-              placeholder="Digite o CEP"
-            />
           </div>
+          <FormInput
+            name="complement"
+            control={form.control}
+            label="Complemento"
+            placeholder="Digite o complemento"
+          />
         </section>
         <div className="flex w-full justify-end mt-4">
           <Button type="submit">Próximo</Button>

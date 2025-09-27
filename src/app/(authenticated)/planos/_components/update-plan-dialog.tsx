@@ -27,8 +27,6 @@ export function UpdatePlanDialog({ plan }: UpdatePlanDialogProps) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
-  console.log({price: plan.price, fixed: plan.price?.toFixed(2).replace(".", ",")})
-
   const planForm = useForm<PlanSchema>({
     resolver: zodResolver(planSchema),
     defaultValues: {
