@@ -10,6 +10,7 @@ import {
   FormItem,
   FormLabel,
   FormControl,
+  FormMessage,
 } from "@/components/ui/form";
 import {
   Select,
@@ -24,6 +25,13 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { getEnrollmentFormData } from "@/api/student";
+import { 
+  GridClass, 
+  ClassFormData, 
+  ModalityFormData 
+} from "@/interfaces/enrollment";
 
 interface TrialStudentFormProps {
   form: UseFormReturn<TrialStudentSchema>;
@@ -31,29 +39,8 @@ interface TrialStudentFormProps {
   isLoading: boolean;
   onDelete?: () => void;
   onDeleteLoading?: boolean;
-  modalities: Array<{ id: string; name: string }>;
-  teachers: Array<{ id: string; firstName: string; lastName: string }>;
-  classLevels: Array<{ id: string; name: string }>;
   selectedDate?: Date;
 }
-
-const DAYS_OF_WEEK = [
-  { value: "monday", label: "Segunda-feira" },
-  { value: "tuesday", label: "Terça-feira" },
-  { value: "wednesday", label: "Quarta-feira" },
-  { value: "thursday", label: "Quinta-feira" },
-  { value: "friday", label: "Sexta-feira" },
-  { value: "saturday", label: "Sábado" },
-  { value: "sunday", label: "Domingo" },
-];
-
-const TIME_SLOTS = [
-  "06:00", "06:30", "07:00", "07:30", "08:00", "08:30", "09:00", "09:30",
-  "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
-  "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
-  "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30",
-  "22:00", "22:30", "23:00", "23:30",
-];
 
 export default function TrialStudentForm({
   form,
@@ -61,12 +48,22 @@ export default function TrialStudentForm({
   isLoading,
   onDelete,
   onDeleteLoading,
-  modalities,
-  teachers,
-  classLevels,
   selectedDate,
 }: TrialStudentFormProps) {
-  const watchedModalityId = form.watch("gridItem.class.modalityId");
+  const { data: formData, isLoading: isFormDataLoading } = useQuery({
+    queryKey: ["enrollment-form-data"],
+    queryFn: getEnrollmentFormData,
+  });
+
+  const selectedModality = form.watch("modalityId");
+  const selectedClassId = form.watch("classId");
+
+  // Filtrar classes baseado na modalidade selecionada
+  const filteredClasses =
+    formData?.classes?.filter(
+      (classe: ClassFormData) =>
+        classe.modalityId === selectedModality && classe.gridClasses.length > 0
+    ) || [];
 
   return (
     <Form {...form}>
@@ -75,7 +72,7 @@ export default function TrialStudentForm({
         className="flex flex-col h-full justify-between"
       >
         <section className="space-y-6">
-          {/* Dados do Lead */}
+          {/* Dados do Aluno */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Dados do Aluno</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -99,18 +96,10 @@ export default function TrialStudentForm({
                 mask="(99) 99999-9999"
               />
               <FormInput
-                name="lead.email"
+                name="lead.instagram"
                 control={form.control}
-                label="Email"
-                placeholder="email@exemplo.com"
-                type="email"
-              />
-              <FormInput
-                name="lead.cpf"
-                control={form.control}
-                label="CPF"
-                placeholder="000.000.000-00"
-                mask="999.999.999-99"
+                label="Instagram"
+                placeholder="@usuario"
               />
             </div>
           </div>
@@ -119,221 +108,195 @@ export default function TrialStudentForm({
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Dados da Aula</h3>
             
+            {/* Modalidade e Turma */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Modalidade */}
+              <FormField
+                control={form.control}
+                name="modalityId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Modalidade</FormLabel>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        form.setValue("classId", ""); // Limpar turma ao trocar modalidade
+                        form.setValue("date", ""); // Limpar data ao trocar modalidade
+                      }}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma modalidade" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {formData?.modalities?.map(
+                          (modality: ModalityFormData) => (
+                            <SelectItem key={modality.id} value={modality.id}>
+                              {modality.name}
+                            </SelectItem>
+                          )
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Turma */}
+              <FormField
+                control={form.control}
+                name="classId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Turma e Horário</FormLabel>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        form.setValue("date", ""); // Limpar data ao trocar turma
+                        
+                        // Preencher dados do gridItem baseado na turma selecionada
+                        const selectedClass = formData?.classes?.find(
+                          (classe: ClassFormData) => classe.id === value
+                        );
+                        if (selectedClass && selectedClass.gridClasses.length > 0) {
+                          const [gridItem] = selectedClass.gridClasses;
+                          form.setValue("gridItem.id", gridItem.id);
+                          form.setValue("gridItem.dayOfWeek", gridItem.dayOfWeek);
+                          form.setValue("gridItem.startTime", gridItem.startTime);
+                          form.setValue("gridItem.endTime", gridItem.endTime);
+                        }
+                      }}
+                      defaultValue={field.value}
+                      disabled={!selectedModality}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma turma" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {filteredClasses.map((classe: ClassFormData) => {
+                          const days = classe.gridClasses
+                            .map(({ dayOfWeek }: GridClass) => {
+                              const dayMap: Record<string, string> = {
+                                sunday: "Dom",
+                                monday: "Seg",
+                                tuesday: "Ter",
+                                wednesday: "Qua",
+                                thursday: "Qui",
+                                friday: "Sex",
+                                saturday: "Sáb",
+                              };
+                              return dayMap[dayOfWeek] || dayOfWeek;
+                            })
+                            .join(", ");
+
+                          const [gridItem] = classe.gridClasses;
+                          const label = `${classe.modality.name} ${classe.description} | ${classe.classLevel.name}`;
+
+                          return (
+                            <SelectItem key={classe.id} value={classe.id}>
+                              {label} - {days}, das {gridItem?.startTime} às{" "}
+                              {gridItem?.endTime}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             {/* Data */}
             <FormField
               control={form.control}
               name="date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Data da Aula</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(new Date(field.value), "PPP", { locale: ptBR })
-                          ) : (
-                            <span>Selecione a data</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value ? new Date(field.value) : selectedDate}
-                        onSelect={(date) => {
-                          field.onChange(date ? date.toISOString() : "");
-                        }}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                        locale={ptBR}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </FormItem>
-              )}
-            />
+              render={({ field }) => {
+                const selectedClass = formData?.classes?.find(
+                  (classe: ClassFormData) => classe.id === selectedClassId
+                );
 
-            {/* Dia da Semana */}
-            <FormField
-              control={form.control}
-              name="gridItem.dayOfWeek"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Dia da Semana</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o dia" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {DAYS_OF_WEEK.map((day) => (
-                        <SelectItem key={day.value} value={day.value}>
-                          {day.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
+                // Função para verificar se uma data é válida (tem aula na turma selecionada)
+                const isDateValid = (date: Date) => {
+                  if (!selectedClass) return false;
 
-            {/* Horários */}
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="gridItem.startTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Horário de Início</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o horário" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {TIME_SLOTS.map((time) => (
-                          <SelectItem key={time} value={time}>
-                            {time}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  const dayOfWeek = date.getDay(); // 0 = domingo, 1 = segunda, etc.
+                  const dayMap: Record<number, string> = {
+                    0: "sunday",
+                    1: "monday",
+                    2: "tuesday",
+                    3: "wednesday",
+                    4: "thursday",
+                    5: "friday",
+                    6: "saturday",
+                  };
+
+                  const dayName = dayMap[dayOfWeek];
+                  return selectedClass.gridClasses.some(
+                    (gridClass: GridClass) => gridClass.dayOfWeek === dayName
+                  );
+                };
+
+                return (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Data da Aula</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                            disabled={!selectedClassId}
+                          >
+                            {field.value ? (
+                              format(new Date(field.value), "dd/MM/yyyy", {
+                                locale: ptBR,
+                              })
+                            ) : (
+                              <span>
+                                {selectedClassId
+                                  ? "Selecione a data"
+                                  : "Selecione uma turma primeiro"}
+                              </span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            field.value ? new Date(field.value) : selectedDate
+                          }
+                          onSelect={(date) =>
+                            field.onChange(date?.toISOString())
+                          }
+                          disabled={(date) =>
+                            date < new Date() || !isDateValid(date)
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                    {selectedClassId && (
+                      <p className="text-xs text-muted-foreground">
+                        Apenas datas com aulas da turma selecionada estão
+                        disponíveis
+                      </p>
+                    )}
                   </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="gridItem.endTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Horário de Término</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o horário" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {TIME_SLOTS.map((time) => (
-                          <SelectItem key={time} value={time}>
-                            {time}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Modalidade */}
-            <FormField
-              control={form.control}
-              name="gridItem.class.modalityId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Modalidade</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione a modalidade" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {modalities.map((modality) => (
-                        <SelectItem key={modality.id} value={modality.id}>
-                          {modality.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-
-            {/* Professor */}
-            <FormField
-              control={form.control}
-              name="gridItem.class.teacherId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Professor</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o professor" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {teachers.map((teacher) => (
-                        <SelectItem key={teacher.id} value={teacher.id}>
-                          {teacher.firstName} {teacher.lastName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-
-            {/* Nível da Classe */}
-            <FormField
-              control={form.control}
-              name="gridItem.class.classLevelId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nível da Classe</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o nível" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {classLevels.map((level) => (
-                        <SelectItem key={level.id} value={level.id}>
-                          {level.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormInput
-                name="gridItem.class.name"
-                control={form.control}
-                label="Nome da Classe"
-                placeholder="Ex: Ballet Iniciante"
-              />
-              <FormInput
-                name="gridItem.class.maxStudents"
-                control={form.control}
-                label="Máximo de Alunos"
-                placeholder="Ex: 15"
-                type="number"
-              />
-            </div>
-
-            <FormInput
-              name="gridItem.class.description"
-              control={form.control}
-              label="Descrição da Classe"
-              placeholder="Descrição opcional da classe"
+                );
+              }}
             />
           </div>
         </section>
@@ -354,7 +317,7 @@ export default function TrialStudentForm({
               )}
             </Button>
           )}
-          <Button type="submit" className="px-12" disabled={isLoading}>
+          <Button type="submit" className="px-12" disabled={isLoading || isFormDataLoading}>
             {isLoading ? <Loader2 className="size-4 animate-spin" /> : "Salvar"}
           </Button>
         </div>
@@ -362,4 +325,3 @@ export default function TrialStudentForm({
     </Form>
   );
 }
-

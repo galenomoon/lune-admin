@@ -28,10 +28,12 @@ export default function CalendarListEventsSidebar({
   events = [],
   date,
   onEventClick,
+  onCreateEvent,
 }: {
   events: TrialStudent[];
   date: Date;
   onEventClick: (event: TrialStudent) => void;
+  onCreateEvent?: () => void;
 }) {
   const dayEvents = events.filter((event) => {
     const eventDate = new Date(event.date);
@@ -56,7 +58,7 @@ export default function CalendarListEventsSidebar({
         <SidebarSeparator />
         <SidebarGroup>
           <SidebarGroupContent className="flex flex-col gap-2">
-            <Button className="w-full">
+            <Button className="w-full" onClick={onCreateEvent}>
               <Plus className="w-4 h-4" />
               Novo Agendamento
             </Button>
@@ -93,6 +95,23 @@ export const EventItem = ({
     };
   }, [event]);
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'SCHEDULED':
+        return 'bg-purple-500';
+      case 'PENDING_STATUS':
+        return 'bg-yellow-500';
+      case 'CONVERTED':
+        return 'bg-green-500';
+      case 'NOT_CONVERTED':
+        return 'bg-red-500';
+      case 'CANCELLED':
+        return 'bg-gray-500';
+      default:
+        return 'bg-purple-500';
+    }
+  };
+
   return (
     <Card
       key={event.id}
@@ -101,7 +120,7 @@ export const EventItem = ({
     >
       <section className="flex flex-col gap-1 w-full px-3">
         <CardHeader className="flex items-center px-0">
-          <div className="w-2 h-2 bg-purple-500 rounded-full" />
+          <div className={`w-2 h-2 ${getStatusColor(event.status || 'SCHEDULED')} rounded-full`} />
           <CardTitle className="capitalize text-sm">
             {modality} {classLevel && `• ${classLevel}`}
           </CardTitle>

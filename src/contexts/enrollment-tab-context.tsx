@@ -54,7 +54,7 @@ export const EnrollmentTabProvider = ({
   );
   const [isEditingEnrollment, setIsEditingEnrollment] = useState(false);
 
-  console.log({ currentStudent, currentEnrollment });
+
 
   const queryClient = useQueryClient();
 

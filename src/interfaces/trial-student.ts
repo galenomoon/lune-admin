@@ -5,6 +5,8 @@ export interface Lead {
   phone: string;
   email?: string;
   cpf?: string;
+  instagram?: string;
+  age?: number;
   status?: string;
   score?: number;
   createdAt: string;
@@ -60,6 +62,8 @@ export interface TrialStudent {
   gridItemId: string;
   lead?: Lead;
   gridItem?: GridItem;
+  status: string;
+  trialStatus: string;
   createdAt: string;
   updatedAt: string;
 }

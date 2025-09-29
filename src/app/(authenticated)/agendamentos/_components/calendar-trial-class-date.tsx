@@ -69,24 +69,62 @@ export default function CalendarTrialClassDate({
       </div>
 
       <div className="space-y-0.5 md:space-y-1">
-        {dayEvents.slice(0, 2).map((event, eventIndex) => (
-          <button
-            key={eventIndex}
-            className="text-xs p-1 w-full rounded bg-purple-100 text-purple-800 cursor-pointer hover:bg-purple-200 transition-colors"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEventClick(event);
-            }}
-          >
-            <div className="font-medium truncate">
-              {event.lead?.firstName} {event.lead?.lastName}
-            </div>
-            <div className="text-purple-600 text-xs">
-              {formatTime(event?.gridItem?.startTime || "")} -{" "}
-              {event.gridItem?.class?.modality?.name}
-            </div>
-          </button>
-        ))}
+        {dayEvents.slice(0, 2).map((event, eventIndex) => {
+
+          const getEventStyles = (status: string) => {
+            console.log(status);
+            switch (status) {
+              case 'SCHEDULED':
+                return 'bg-purple-100 text-purple-800 hover:bg-purple-200';
+              case 'PENDING_STATUS':
+                return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
+              case 'CONVERTED':
+                return 'bg-green-100 text-green-800 hover:bg-green-200';
+              case 'NOT_CONVERTED':
+                return 'bg-red-100 text-red-800 hover:bg-red-200';
+              case 'CANCELLED':
+                return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+              default:
+                return 'bg-purple-100 text-purple-800 hover:bg-purple-200';
+            }
+          };
+
+          const getTextColor = (status: string) => {
+            switch (status) {
+              case 'SCHEDULED':
+                return 'text-purple-600';
+              case 'PENDING_STATUS':
+                return 'text-yellow-600';
+              case 'CONVERTED':
+                return 'text-green-600';
+              case 'NOT_CONVERTED':
+                return 'text-red-600';
+              case 'CANCELLED':
+                return 'text-gray-600';
+              default:
+                return 'text-purple-600';
+            }
+          };
+
+          return (
+            <button
+              key={eventIndex}
+              className={`text-xs p-1 w-full rounded cursor-pointer transition-colors ${getEventStyles(event.trialStatus || 'SCHEDULED')}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEventClick(event);
+              }}
+            >
+              <div className="font-medium truncate">
+                {event.lead?.firstName} {event.lead?.lastName}
+              </div>
+              <div className={`text-xs ${getTextColor(event.trialStatus || 'SCHEDULED')}`}>
+                {formatTime(event?.gridItem?.startTime || "")} -{" "}
+                {event.gridItem?.class?.modality?.name}
+              </div>
+            </button>
+          );
+        })}
 
         {dayEvents.length > 2 && (
           <div className="text-xs text-gray-500 text-center">

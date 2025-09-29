@@ -31,6 +31,7 @@ interface ModalityData {
   classes: number;
   enrollments: number;
   avgEnrollmentsPerClass: string;
+  trialClasses: number;
 }
 
 interface ChartPieModalitiesProps {
@@ -44,11 +45,12 @@ export function ChartPieModalities({ data }: ChartPieModalitiesProps) {
     value: modality.enrollments,
     classes: modality.classes,
     avgEnrollmentsPerClass: modality.avgEnrollmentsPerClass,
+    trialClasses: modality.trialClasses,
     fill: COLORS[index % COLORS.length],
     color: COLORS[index % COLORS.length],
   }));
 
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { name: string; value: number; classes: number; avgEnrollmentsPerClass: string } }> }) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { name: string; value: number; classes: number; avgEnrollmentsPerClass: string; trialClasses: number } }> }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
@@ -65,9 +67,15 @@ export function ChartPieModalities({ data }: ChartPieModalitiesProps) {
             <div className="grid gap-2">
               <div className="flex flex-col">
                 <span className="text-[0.70rem] uppercase text-muted-foreground">
-                  Total de Alunos
+                  Total de Matrículas
                 </span>
                 <span className="font-bold">{data.value} alunos</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[0.70rem] uppercase text-muted-foreground">
+                  Aulas Avulsas
+                </span>
+                <span className="font-bold">{data.trialClasses} aulas</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-[0.70rem] uppercase text-muted-foreground">
