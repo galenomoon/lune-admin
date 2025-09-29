@@ -68,7 +68,7 @@ export default function AgendamentosPage() {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="calendar">Calendário</TabsTrigger>
             <TabsTrigger value="pending" className="flex items-center gap-2">
-              Pendências
+              Pendências ({pendingCount || 0})
               {pendingCount > 0 && (
                 <div className="relative">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full animate-ping"></div>

@@ -72,7 +72,6 @@ export default function CalendarTrialClassDate({
         {dayEvents.slice(0, 2).map((event, eventIndex) => {
 
           const getEventStyles = (status: string) => {
-            console.log(status);
             switch (status) {
               case 'SCHEDULED':
                 return 'bg-purple-100 text-purple-800 hover:bg-purple-200';

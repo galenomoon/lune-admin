@@ -120,7 +120,7 @@ export const EventItem = ({
     >
       <section className="flex flex-col gap-1 w-full px-3">
         <CardHeader className="flex items-center px-0">
-          <div className={`w-2 h-2 ${getStatusColor(event.status || 'SCHEDULED')} rounded-full`} />
+          <div className={`w-2 h-2 ${getStatusColor(event.trialStatus || 'SCHEDULED')} rounded-full`} />
           <CardTitle className="capitalize text-sm">
             {modality} {classLevel && `• ${classLevel}`}
           </CardTitle>
