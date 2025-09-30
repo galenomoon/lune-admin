@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { GridItem, GridSchedule } from "@/interfaces/grid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, Filter, User2, Star, Clock } from "lucide-react";
+import { Search, Plus, Filter, User2, Star, Clock, Clock1 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -82,7 +82,6 @@ export default function WeekGrid({
 
   const timeSlots = getTimeSlots();
 
-
   const formatTime = (time: string) => {
     return time.substring(0, 5);
   };
@@ -142,132 +141,143 @@ export default function WeekGrid({
         <CardHeader>
           <CardTitle>Grade de Aulas Semanais</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
+        <CardContent className="h-[60dvh] overflow-auto">
+          <Table>
+            <TableHeader className="sticky top-0 bg-background z-20 border-b">
+              <TableRow className="border-b">
+                <TableHead className="w-20 font-semibold flex items-center justify-center">
+                  <Clock1 className="w-4 h-4" />
+                </TableHead>
+                {dayNames.map((day) => (
+                  <TableHead
+                    key={day}
+                    className="text-center min-w-32 font-semibold"
+                  >
+                    {day}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
                 <TableRow>
-                  <TableHead className="w-20">Horário</TableHead>
-                  {dayNames.map((day) => (
-                    <TableHead key={day} className="text-center min-w-32">
-                      {day}
-                    </TableHead>
-                  ))}
+                  <TableCell colSpan={8} className="text-center py-8">
+                    Carregando grade...
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
-                      Carregando grade...
-                    </TableCell>
-                  </TableRow>
-                ) : timeSlots.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
-                      <div className="text-gray-500">
-                        <p className="text-lg font-medium">
-                          Nenhuma aula encontrada
-                        </p>
-                        <p className="text-sm">
-                          Adicione uma nova aula para começar
-                        </p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  timeSlots.map((timeSlot) => {
-                    // Verificar se há pelo menos uma aula neste horário
-                    const hasAnyClass = data.some((schedule) => {
-                      return dayKeys.some((dayKey) => {
-                        const item = schedule[
-                          dayKey as keyof GridSchedule
-                        ] as GridItem;
-                        return item && item.startTime === timeSlot;
-                      });
+              ) : timeSlots.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    <div className="text-gray-500">
+                      <p className="text-lg font-medium">
+                        Nenhuma aula encontrada
+                      </p>
+                      <p className="text-sm">
+                        Adicione uma nova aula para começar
+                      </p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                timeSlots.map((timeSlot) => {
+                  // Verificar se há pelo menos uma aula neste horário
+                  const hasAnyClass = data.some((schedule) => {
+                    return dayKeys.some((dayKey) => {
+                      const item = schedule[
+                        dayKey as keyof GridSchedule
+                      ] as GridItem;
+                      return item && item.startTime === timeSlot;
                     });
+                  });
 
-                    if (!hasAnyClass) return null;
+                  if (!hasAnyClass) return null;
 
-                    return (
-                      <TableRow key={timeSlot}>
-                        <TableCell className="font-medium">
-                          {formatTime(timeSlot)}
-                        </TableCell>
-                        {dayKeys.map((dayKey) => {
-                          const schedule = data.find((s) => {
-                            const item = s[
-                              dayKey as keyof GridSchedule
-                            ] as GridItem;
-                            return item && item.startTime === timeSlot;
-                          });
-                          const item = schedule?.[
+                  return (
+                    <TableRow key={timeSlot}>
+                      <TableCell className="font-medium text-center h-[90px] m-2 text-xs text-muted-foreground flex items-center justify-center">
+                        {formatTime(timeSlot)}
+                      </TableCell>
+                      {dayKeys.map((dayKey) => {
+                        const schedule = data.find((s) => {
+                          const item = s[
                             dayKey as keyof GridSchedule
                           ] as GridItem;
-                          const hasTrialStudents =
-                            item?.trialStudents &&
-                            item?.trialStudents?.length > 0;
+                          return item && item.startTime === timeSlot;
+                        });
+                        const item = schedule?.[
+                          dayKey as keyof GridSchedule
+                        ] as GridItem;
+                        const hasTrialStudents =
+                          item?.trialStudents &&
+                          item?.trialStudents?.length > 0;
 
-                          return (
-                            <TableCell key={dayKey} className="p-1">
-                              {item ? (
-                                <div
-                                  className="p-2 min-w-[160px] rounded-lg border flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-md transition-shadow"
-                                  onClick={() => onEdit(item)}
-                                >
-                                  <div className="space-y-1 w-full">
-                                    <article className="flex flex-col gap-">
-                                      <div className="font-medium text-sm">
-                                        {item.modality}
-                                      </div>
-                                      <div className="text-xs text-gray-500 flex items-center gap-1 w-full justify-center">
-                                        <Clock className="w-2.5 h-2.5" />
-                                        {formatTime(item.startTime)} -{" "}
-                                        {formatTime(item.endTime)}
-                                      </div>
-                                      <div className="text-xs text-gray-600">
-                                        {item.level} • {item.teacherName}
-                                      </div>
-                                    </article>
-                                    <div className="flex items-center w-full justify-center gap-4">
+                        return (
+                          <TableCell key={dayKey} className="p-1">
+                            {item ? (
+                              <div
+                                className="p-2 rounded-lg border flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-md transition-shadow"
+                                onClick={() => onEdit(item)}
+                              >
+                                <div className="space-y-1 w-full">
+                                  <article className="flex flex-col gap-">
+                                    <div className="font-medium text-sm">
+                                      {item.modality}
+                                    </div>
+                                    <div className="text-xs text-gray-500 flex items-center gap-1 w-full justify-center">
+                                      <Clock className="w-2.5 h-2.5" />
+                                      {formatTime(item.startTime)} -{" "}
+                                      {formatTime(item.endTime)}
+                                    </div>
+                                    <div className="text-xs text-gray-600">
+                                      {item.level} • {item.teacherName}
+                                    </div>
+                                  </article>
+                                  <div className="flex items-center w-full justify-center gap-4">
+                                    <Badge
+                                      variant="outline"
+                                      className={`text-xs ${getStatusColor(
+                                        item.enrolledStudents || 0,
+                                        item.maxStudents || 1
+                                      )}`}
+                                    >
+                                      <User2 className="w-4 h-4" />
+                                      {item.enrolledStudents || 0}/
+                                      {item.maxStudents || 1}
+                                    </Badge>
+                                    {hasTrialStudents ? (
+                                      <></>
+                                    ) : (
                                       <Badge
                                         variant="outline"
-                                        className={`text-xs ${getStatusColor(
-                                          item.enrolledStudents || 0,
-                                          item.maxStudents || 1
-                                        )}`}
+                                        className="text-xs"
                                       >
-                                        <User2 className="w-4 h-4" />
-                                        {item.enrolledStudents || 0}/
-                                        {item.maxStudents || 1}
+                                        <Star className="w-4 h-4" />
+                                        {item?.trialStudents?.length || 0}
                                       </Badge>
-                                      {hasTrialStudents ? (
-                                        <></>
-                                      ) : (
-                                        <Badge
-                                          variant="outline"
-                                          className="text-xs"
-                                        >
-                                          <Star className="w-4 h-4" />
-                                          {item?.trialStudents?.length || 0}
-                                        </Badge>
-                                      )}
-                                    </div>
+                                    )}
                                   </div>
                                 </div>
-                              ) : (
-                                <div className="h-20"></div>
-                              )}
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                              </div>
+                            ) : (
+                              <div
+                                className="
+                                    rounded-lg border border-zinc-800 border-dashed
+                                    flex items-center justify-center h-[90px] w-full"
+                              >
+                                <p className="text-xs text-zinc-800">
+                                  horário vazio
+                                </p>
+                              </div>
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

@@ -51,7 +51,9 @@ export default function GradePage() {
     });
   };
 
-  const filterLength = Object.values(filters).filter((value) => value !== "").length;
+  const filterLength = Object.values(filters).filter(
+    (value) => value !== ""
+  ).length;
 
   if (isFormDataLoading) {
     return (
@@ -65,8 +67,8 @@ export default function GradePage() {
   }
 
   return (
-    <div className="w-full flex flex-col gap-4">
-      <section className="flex w-full justify-between items-center">
+    <div className="grid grid-cols-1 max-w-full gap-4">
+      <section className="flex w-full justify-between items-center flex-shrink-0">
         <div>
           <h1 className="text-2xl font-bold">Grade de Aulas</h1>
           <p className="text-muted-foreground">
@@ -74,7 +76,6 @@ export default function GradePage() {
           </p>
         </div>
       </section>
-
       <WeekGrid
         data={gridData?.data || []}
         isLoading={isLoading}
@@ -85,7 +86,14 @@ export default function GradePage() {
         filterLength={filterLength}
         FilterChildren={() => (
           <GridFiltersComponent
-            formData={formData || { modalities: [], teachers: [], classLevels: [], classes: [] }}
+            formData={
+              formData || {
+                modalities: [],
+                teachers: [],
+                classLevels: [],
+                classes: [],
+              }
+            }
             selectedFilter={filters}
             setSelectedFilter={setFilters}
           />
@@ -95,14 +103,28 @@ export default function GradePage() {
       <CreateGridDialog
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
-        formData={formData || { modalities: [], teachers: [], classLevels: [], classes: [] }}
+        formData={
+          formData || {
+            modalities: [],
+            teachers: [],
+            classLevels: [],
+            classes: [],
+          }
+        }
       />
 
       {editingItem && (
         <UpdateGridDialog
           gridItem={editingItem}
           onClose={() => setEditingItem(null)}
-          formData={formData || { modalities: [], teachers: [], classLevels: [], classes: [] }}
+          formData={
+            formData || {
+              modalities: [],
+              teachers: [],
+              classLevels: [],
+              classes: [],
+            }
+          }
         />
       )}
     </div>

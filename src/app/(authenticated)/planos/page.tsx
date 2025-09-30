@@ -13,7 +13,7 @@ export default function Plans() {
   });
 
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="grid grid-cols-1 max-w-full gap-4">
       <section className="flex w-full justify-between items-center">
         <h1 className="text-2xl font-bold">Planos</h1>
         <CreatePlanDialog />

@@ -13,12 +13,12 @@ export default function Teachers() {
   });
 
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="grid grid-cols-1 max-w-full gap-4">
       <section className="flex w-full justify-between items-center">
         <h1 className="text-2xl font-bold">Professores</h1>
         <CreateTeacherDialog />
       </section>
-      <DataTable columns={columns} data={teachers || []} isLoading={isLoading} />
+      <DataTable scrollableY scrollableXY columns={columns} data={teachers || []} isLoading={isLoading} />
     </div>
   );
 }
