@@ -16,11 +16,12 @@ import GridForm from "./grid-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { createGridItem } from "@/api/grid";
+import { GridFormData } from "@/interfaces/grid";
 
 type CreateGridDialogProps = {
   isOpen: boolean;
   onClose: () => void;
-  formData: any;
+  formData: GridFormData;
 };
 
 export function CreateGridDialog({

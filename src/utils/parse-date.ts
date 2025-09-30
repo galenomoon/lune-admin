@@ -24,7 +24,7 @@ export const dateStringToDate = (dateString: string) => {
 
   if (!match) return null;
 
-  const [_, day, month, year] = match;
+  const [, day, month, year] = match;
 
   return new Date(`${year}-${month}-${day}T00:00:00Z`);
 };

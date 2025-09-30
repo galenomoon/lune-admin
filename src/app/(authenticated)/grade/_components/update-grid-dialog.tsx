@@ -16,13 +16,13 @@ import GridForm from "./grid-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { deleteGridItem, updateGridItem } from "@/api/grid";
-import { GridItem } from "@/interfaces/grid";
+import { GridFormData, GridItem } from "@/interfaces/grid";
 import { useEffect } from "react";
 
 type UpdateGridDialogProps = {
   gridItem: GridItem;
   onClose?: () => void;
-  formData: any;
+  formData: GridFormData;
 };
 
 export function UpdateGridDialog({

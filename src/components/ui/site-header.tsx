@@ -1,5 +1,3 @@
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   Select,
   SelectContent,
@@ -18,9 +16,7 @@ interface SiteHeaderProps {
 
 export function SiteHeader({
   selectedMonth = new Date().getMonth() + 1,
-  selectedYear = new Date().getFullYear(),
   onMonthChange,
-  onYearChange,
 }: SiteHeaderProps) {
   const months = [
     { value: 1, label: "Janeiro" },
@@ -36,9 +32,6 @@ export function SiteHeader({
     { value: 11, label: "Novembro" },
     { value: 12, label: "Dezembro" },
   ];
-
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 3 }, (_, i) => currentYear - 1 + i);
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">

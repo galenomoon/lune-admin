@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getGridItems, getGridFormData } from "@/api/grid";
 import WeekGrid from "./_components/week-grid";
-import { GridItem, GridFilters, GridFormData } from "@/interfaces/grid";
+import { GridItem, GridFilters } from "@/interfaces/grid";
 import { CreateGridDialog } from "./_components/create-grid-dialog";
 import { UpdateGridDialog } from "./_components/update-grid-dialog";
 import GridFiltersComponent from "./_components/grid-filters";
