@@ -100,7 +100,7 @@ export function UpdatePlanDialog({ plan }: UpdatePlanDialogProps) {
           <Settings className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex flex-col min-w-2xl gap-8 h-fit">
+      <DialogContent className="flex flex-col min-w-2xl gap-8 max-h-[90vh] min-h-[80vh] overflow-y-auto">
         <DialogHeader className="h-fit">
           <DialogTitle>Editar Plano</DialogTitle>
         </DialogHeader>

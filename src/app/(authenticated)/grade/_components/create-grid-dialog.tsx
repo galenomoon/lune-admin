@@ -80,7 +80,7 @@ export function CreateGridDialog({
         }
       }}
     >
-      <DialogContent className="flex flex-col min-w-4xl gap-8 h-fit max-h-[90vh] overflow-y-auto">
+      <DialogContent className="flex flex-col min-w-4xl gap-8 h-fit max-h-[90vh] min-h-[80vh] overflow-y-auto">
         <DialogHeader className="h-fit">
           <DialogTitle>Aula na Grade</DialogTitle>
         </DialogHeader>

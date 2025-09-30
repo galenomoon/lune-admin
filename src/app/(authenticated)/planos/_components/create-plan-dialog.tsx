@@ -65,7 +65,7 @@ export function CreatePlanDialog() {
           Novo Plano
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex flex-col min-w-2xl gap-8 h-fit">
+      <DialogContent className="flex flex-col min-w-2xl gap-8 max-h-[90vh] min-h-[80vh] overflow-y-auto">
         <DialogHeader className="h-fit">
           <DialogTitle>Novo Plano</DialogTitle>
         </DialogHeader>

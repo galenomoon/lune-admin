@@ -125,7 +125,7 @@ export function CreateTrialStudentDialog({
         }
       }}
     >
-      <DialogContent className="flex flex-col min-w-4xl gap-8 h-fit max-h-[90vh] overflow-y-auto">
+      <DialogContent className="flex flex-col md:min-w-4xl gap-8 h-fit max-h-[90vh] min-h-[80vh] overflow-y-auto">
         <DialogHeader className="h-fit">
           <DialogTitle>Nova Aula Experimental</DialogTitle>
         </DialogHeader>

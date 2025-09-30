@@ -69,7 +69,7 @@ export function CreateTeacherDialog() {
           Novo Professor
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex flex-col min-w-2xl gap-8 h-fit">
+      <DialogContent className="flex flex-col gap-8 sm:min-w-4xl max-h-[90vh] min-h-[80vh] " >
         <DialogHeader className="h-fit">
           <DialogTitle>Novo Professor</DialogTitle>
         </DialogHeader>

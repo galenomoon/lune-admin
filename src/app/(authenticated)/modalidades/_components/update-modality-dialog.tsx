@@ -86,7 +86,7 @@ export function UpdateModalityDialog({ modality }: UpdateModalityDialogProps) {
           <Settings className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex flex-col min-w-2xl gap-8 h-fit">
+      <DialogContent className="flex flex-col gap-8 sm:min-w-4xl max-h-[90vh] min-h-[40vh] " >
         <DialogHeader className="h-fit">
           <DialogTitle>Editar Modalidade</DialogTitle>
         </DialogHeader>

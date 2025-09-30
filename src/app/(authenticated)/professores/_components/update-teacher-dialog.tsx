@@ -44,10 +44,7 @@ export function UpdateTeacherDialog({ teacher }: UpdateTeacherDialogProps) {
     },
   });
 
-  const {
-    mutate: updateTeacherMutation,
-    isPending,
-  } = useMutation({
+  const { mutate: updateTeacherMutation, isPending } = useMutation({
     mutationKey: ["updateTeacher", teacher.id],
     mutationFn: async (data: TeacherSchema) =>
       await updateTeacher(teacher.id, data),
@@ -61,21 +58,19 @@ export function UpdateTeacherDialog({ teacher }: UpdateTeacherDialogProps) {
     },
   });
 
-  const {
-    mutate: deleteTeacherMutation,
-    isPending: isDeletePending,
-  } = useMutation({
-    mutationKey: ["deleteTeacher", teacher.id],
-    mutationFn: async () => await deleteTeacher(teacher.id),
-    onSuccess: () => {
-      toast.success("Professor deletado com sucesso");
-      queryClient.invalidateQueries({ queryKey: ["teachers"] });
-      setOpen(false);
-    },
-    onError: () => {
-      toast.error("Erro ao deletar professor");
-    },
-  });
+  const { mutate: deleteTeacherMutation, isPending: isDeletePending } =
+    useMutation({
+      mutationKey: ["deleteTeacher", teacher.id],
+      mutationFn: async () => await deleteTeacher(teacher.id),
+      onSuccess: () => {
+        toast.success("Professor deletado com sucesso");
+        queryClient.invalidateQueries({ queryKey: ["teachers"] });
+        setOpen(false);
+      },
+      onError: () => {
+        toast.error("Erro ao deletar professor");
+      },
+    });
 
   const handleSubmit = (data: TeacherSchema) => updateTeacherMutation(data);
 
@@ -85,13 +80,14 @@ export function UpdateTeacherDialog({ teacher }: UpdateTeacherDialogProps) {
       onOpenChange={(isOpen) => {
         setOpen(isOpen);
 
-        if (!isOpen) teacherForm.reset({
-          firstName: teacher.firstName || "",
-          lastName: teacher.lastName || "",
-          cpf: teacher.cpf || "",
-          rg: teacher.rg || "",
-          birthDate: dateToString(teacher.birthDate) || "",
-        });
+        if (!isOpen)
+          teacherForm.reset({
+            firstName: teacher.firstName || "",
+            lastName: teacher.lastName || "",
+            cpf: teacher.cpf || "",
+            rg: teacher.rg || "",
+            birthDate: dateToString(teacher.birthDate) || "",
+          });
 
         teacherForm.reset({
           firstName: teacher.firstName || "",
@@ -115,7 +111,7 @@ export function UpdateTeacherDialog({ teacher }: UpdateTeacherDialogProps) {
           <Settings className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex flex-col min-w-2xl gap-8 h-fit">
+      <DialogContent className="flex flex-col gap-8 sm:min-w-4xl max-h-[90vh] min-h-[80vh] ">
         <DialogHeader className="h-fit">
           <DialogTitle>Editar Professor</DialogTitle>
         </DialogHeader>

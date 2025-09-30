@@ -29,10 +29,7 @@ export function CreateModalityDialog() {
     },
   });
 
-  const {
-    mutate: createModalityMutation,
-    isPending,
-  } = useMutation({
+  const { mutate: createModalityMutation, isPending } = useMutation({
     mutationKey: ["createModality"],
     mutationFn: async (data: ModalitySchema) => await createModality(data),
     onSuccess: () => {
@@ -61,7 +58,7 @@ export function CreateModalityDialog() {
           Nova Modalidade
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex flex-col min-w-2xl gap-8 h-fit">
+      <DialogContent className="flex flex-col gap-8 sm:min-w-4xl max-h-[90vh] min-h-[40vh] ">
         <DialogHeader className="h-fit">
           <DialogTitle>Nova Modalidade</DialogTitle>
         </DialogHeader>

@@ -125,27 +125,27 @@ export function UpdateEnrollmentDialog({
           <Settings className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex flex-col min-w-4xl h-[560px]">
+      <DialogContent className="flex flex-col sm:min-w-4xl max-h-[90vh] min-h-[80vh] ">
         <DialogHeader className="h-fit flex-row">
           <DialogTitle>{enrollment.studentName}</DialogTitle>
         </DialogHeader>
 
         <Tabs
           defaultValue="personal-data"
-          className="flex-1 flex-row gap-4"
+          className="flex-1 md:flex-row flex-col gap-5 min-h-0"
           value={activeTab}
           onValueChange={setActiveTab}
         >
-          <TabsList className="flex flex-col h-full justify-start gap-2 p-2">
+          <TabsList className="flex flex-row md:flex-col overflow-auto h-full justify-start md:w-fit w-full gap-2 p-2 flex-shrink-0">
             <TabsTrigger
-              className="max-h-fit w-full justify-start"
+              className="max-h-fit w-full justify-center md:justify-start"
               value="personal-data"
             >
               <User />
               Dados pessoais
             </TabsTrigger>
             <TabsTrigger
-              className="max-h-fit w-full justify-start"
+              className="max-h-fit w-full justify-center md:justify-start"
               value="address"
             >
               <MapPin />
@@ -153,7 +153,7 @@ export function UpdateEnrollmentDialog({
             </TabsTrigger>
 
             <TabsTrigger
-              className="max-h-fit w-full justify-start"
+              className="max-h-fit w-full justify-center md:justify-start"
               value="payments"
             >
               <DollarSign />
@@ -161,7 +161,7 @@ export function UpdateEnrollmentDialog({
             </TabsTrigger>
 
             <TabsTrigger
-              className="max-h-fit w-full justify-start"
+              className="max-h-fit w-full justify-center md:justify-start"
               value="enrollment"
             >
               <Book />
