@@ -46,15 +46,15 @@ const EnrollmentTabList = ({ enrollments, studentData }: EnrollmentTabListProps)
     switch (status.toLowerCase()) {
       case "active":
       case "ativo":
-        return "bg-green-100 text-green-800";
+        return "dark:bg-green-900 bg-green-100 dark:text-green-200 text-green-800";
       case "pending":
       case "pendente":
-        return "bg-yellow-100 text-yellow-800";
+        return "dark:bg-yellow-900 bg-yellow-100 dark:text-yellow-200 text-yellow-800";
       case "canceled":
       case "cancelado":
-        return "bg-red-100 text-red-800";
+        return "dark:bg-red-900 bg-red-100 dark:text-red-200 text-red-800";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "dark:bg-zinc-800 bg-zinc-100 dark:text-zinc-300 text-zinc-800";
     }
   };
 

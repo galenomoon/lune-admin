@@ -22,7 +22,7 @@ export const columns: ColumnDef<StudentTable>[] = [
       const formattedPhone = row.original.phone.replace(/\D/g, "").replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
       return (
         <a
-          className="text-purple-600 underline"
+          className="dark:text-pink-400 text-purple-600 underline"
           href={`https://wa.me/${row.original.phone}`}
           target="_blank"
           rel="noopener noreferrer"
@@ -42,13 +42,13 @@ export const columns: ColumnDef<StudentTable>[] = [
           className={cn(
             "font-semibold",
             row.original.status === "PENDING" &&
-              "border-yellow-500 bg-yellow-50 text-yellow-500",
+              "border-yellow-100 bg-yellow-100 text-yellow-900 dark:border-yellow-900 dark:bg-yellow-900 dark:text-yellow-200",
             row.original.status === "PAID" &&
-              "border-green-500 bg-green-50 text-green-500",
+              "border-green-100 bg-green-100 text-green-900 dark:border-green-900 dark:bg-green-900 dark:text-green-200",
             row.original.status === "CANCELED" &&
-              "border-red-500 bg-red-50 text-red-500",
+              "border-red-100 bg-red-100 text-red-900 dark:border-red-900 dark:bg-red-900 dark:text-red-200",
             row.original.status === "OVERDUE" &&
-              "border-orange-500 bg-orange-50 text-orange-500"
+              "border-orange-100 bg-orange-100 text-orange-900 dark:border-orange-900 dark:bg-orange-900 dark:text-orange-200"
           )}
         >
           {statusLabel[row.original.status]}

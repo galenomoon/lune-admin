@@ -43,10 +43,10 @@ export const paymentsColumns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const status = row.original.status;
       const statusColors = {
-        PENDING: "bg-yellow-50 border-yellow-500 text-yellow-500",
-        PAID: "bg-green-50 border-green-500 text-green-500",
-        CANCELED: "bg-red-50 border-red-500 text-red-500",
-        OVERDUE: "bg-red-50 border-red-500 text-red-500",
+        PENDING: "bg-yellow-50 border-yellow-500 text-yellow-500 dark:bg-yellow-900 dark:border-yellow-900 dark:text-yellow-200",
+        PAID: "bg-green-50 border-green-500 text-green-500 dark:bg-green-900 dark:border-green-900 dark:text-green-200",
+        OVERDUE: "bg-red-50 border-red-500 text-red-500 dark:bg-orange-900 dark:border-orange-900 dark:text-orange-200",
+        CANCELED: "bg-red-50 border-red-500 text-red-500 dark:bg-red-900 dark:border-red-900 dark:text-red-200",
       };
       const statusLabel = {
         PENDING: "Pendente",
@@ -98,10 +98,10 @@ export const paymentColumnsDashboard = [
     cell: ({ row }: { row: Row<Payment> }) => {
       const status = row.original.status;
       const statusColors = {
-        PENDING: "bg-yellow-50 border-yellow-500 text-yellow-500",
-        PAID: "bg-green-50 border-green-500 text-green-500",
-        OVERDUE: "bg-red-50 border-red-500 text-red-500",
-        CANCELED: "bg-red-50 border-red-500 text-red-500",
+        PENDING: "bg-yellow-50 border-yellow-500 text-yellow-500 dark:bg-yellow-900 dark:border-yellow-900 dark:text-yellow-200",
+        PAID: "bg-green-50 border-green-500 text-green-500 dark:bg-green-900 dark:border-green-900 dark:text-green-200",
+        OVERDUE: "bg-red-50 border-red-500 text-red-500 dark:bg-orange-900 dark:border-orange-900 dark:text-orange-200",
+        CANCELED: "bg-red-50 border-red-500 text-red-500 dark:bg-red-900 dark:border-red-900 dark:text-red-200",
       };
       const statusLabel = {
         PENDING: "Pendente",

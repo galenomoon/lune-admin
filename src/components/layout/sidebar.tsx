@@ -5,13 +5,11 @@ import {
   LayoutDashboard,
   Grid2X2,
   DollarSign,
-  Star,
   List,
   UserStar,
-  Settings,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
-  LogOutIcon,
+  Settings,
 } from "lucide-react";
 
 import {
@@ -31,13 +29,10 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import logoHeader from "@/assets/header-logo.svg";
 import logoIcon from "@/assets/header-logo-icon.svg";
-import { AuthContext } from "@/contexts/auth-context";
-import { useContext } from "react";
 
 export function Sidebar() {
   const pathname = usePathname();
   const { toggleSidebar, open } = useSidebar();
-  const { signOut } = useContext(AuthContext);
 
   const sidebarGroups = [
     {
@@ -115,17 +110,12 @@ export function Sidebar() {
           url: "/configuracoes",
           icon: Settings,
         },
-        {
-          title: "Sair",
-          icon: LogOutIcon,
-          onClick: signOut,
-        },
       ],
     },
   ];
 
   return (
-    <SidebarUI collapsible="icon">
+    <SidebarUI collapsible="icon" variant="sidebar">
       <SidebarContent className="bg-purple-lune text-white overflow-y-auto">
         <SidebarHeader className="flex items-center gap-2 pt-6 pb-0 flex-row justify-center">
           {open ? (
@@ -163,10 +153,6 @@ export function Sidebar() {
                 {group.items.map((item) => {
                   const isActive = pathname === item.url;
                   const isBlocked = false;
-                  const Element = item?.onClick ? "button" : "a";
-                  const props = item?.onClick
-                    ? { onClick: item.onClick }
-                    : { href: item.url };
 
                   return (
                     <SidebarMenuItem key={item.title}>
@@ -185,10 +171,10 @@ export function Sidebar() {
                             <span>{item.title}</span>
                           </div>
                         ) : (
-                          <Element {...props} className="cursor-pointer">
+                          <a href={item.url} className="cursor-pointer">
                             <item.icon />
                             <span>{item.title}</span>
-                          </Element>
+                          </a>
                         )}
                       </SidebarMenuButton>
                     </SidebarMenuItem>

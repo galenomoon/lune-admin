@@ -1,5 +1,5 @@
 import React from "react";
-import { GridFormData, GridFilters } from "@/interfaces/grid";
+import { GridFormData, GridFilters as GridFiltersType } from "@/interfaces/grid";
 import {
   Select,
   SelectContent,
@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label";
 
 interface GridFiltersProps {
   formData: GridFormData;
-  selectedFilter: GridFilters;
-  setSelectedFilter: (filter: GridFilters) => void;
+  selectedFilter: GridFiltersType;
+  setSelectedFilter: (filter: GridFiltersType) => void;
 }
 
 export default function GridFilters({
@@ -127,3 +127,4 @@ export default function GridFilters({
     </div>
   );
 }
+
