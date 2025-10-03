@@ -10,7 +10,6 @@ import {
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
   ChartBar,
-  Calculator,
 } from "lucide-react";
 
 import {
@@ -30,10 +29,17 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import logoHeader from "@/assets/header-logo.svg";
 import logoIcon from "@/assets/header-logo-icon.svg";
+import { useQuery } from "@tanstack/react-query";
+import { getPendingTrialStudents } from "@/api/trial-student";
 
 export function Sidebar() {
   const pathname = usePathname();
   const { toggleSidebar, open } = useSidebar();
+
+  const { data: pendingData } = useQuery({
+    queryKey: ["pending-trial-students"],
+    queryFn: getPendingTrialStudents,
+  });
 
   const sidebarGroups = [
     {
@@ -62,6 +68,7 @@ export function Sidebar() {
         {
           title: "Aulas Avulsas",
           url: "/agendamentos",
+          pending: pendingData?.count && pendingData.count > 0,
           icon: Calendar,
         },
       ],
@@ -102,7 +109,7 @@ export function Sidebar() {
         //   isBlocked: true,
         // },
       ],
-    }, 
+    },
     {
       label: "Marketing",
       items: [
@@ -111,18 +118,13 @@ export function Sidebar() {
           url: "/tabela-de-metricas",
           icon: ChartBar,
         },
-        {
-          title: "Calculadora de Tráfego Pago",
-          url: "/calculadora-de-trafego-pago",
-          icon: Calculator,
-        }
-      ]
+      ],
     },
   ];
 
   return (
     <SidebarUI collapsible="icon" variant="sidebar">
-      <SidebarContent className="bg-purple-lune text-white overflow-y-auto">
+      <SidebarContent className="bg-purple-lune text-white">
         <SidebarHeader className="flex items-center gap-2 pt-6 pb-0 flex-row justify-center">
           {open ? (
             <Image src={logoHeader} alt="Logo" width={220} />
@@ -180,6 +182,12 @@ export function Sidebar() {
                           <a href={item.url} className="cursor-pointer">
                             <item.icon />
                             <span>{item.title}</span>
+                            {!!item?.pending && (
+                              <div className="relative flex items-center justify-center">
+                                <div className="w-3 h-3 bg-yellow-500 rounded-full animate-ping"></div>
+                                <div className="absolute w-2 h-2 bg-yellow-500 rounded-full"></div>
+                              </div>
+                            )}
                           </a>
                         )}
                       </SidebarMenuButton>

@@ -334,6 +334,18 @@ export function ChartAreaInteractive({ chartData = [] }: ChartAreaInteractivePro
               cursor={false}
               content={
                 <ChartTooltipContent
+                  formatter={(value) => {
+                    if (chartData) {
+                      return Number(value).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      });
+                    }
+
+                    return value;
+                  }}
                   labelFormatter={(value) => {
                     if (chartData) {
                       return new Date(value + "-01").toLocaleDateString("pt-BR", {
