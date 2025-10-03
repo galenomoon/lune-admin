@@ -39,8 +39,8 @@ export function SectionCards({ data = [], className }: SectionCardsProps) {
     )
   }
 
-  const formatTrendValue = (value: number) => {
-    return value > 0 ? `+${(value).toFixed(2)}%` : `${(value).toFixed(2)}%`
+  const formatTrendValue = (value: number, isPositive: boolean) => {
+    return value > 0 ? `${isPositive ? '+' : '-'}${(value).toFixed(2)}%` : `${(value).toFixed(2)}%`
   }
 
   return (
@@ -53,9 +53,11 @@ export function SectionCards({ data = [], className }: SectionCardsProps) {
               {card.value}
             </CardTitle>
             <CardAction>
-              <Badge variant="outline">
+              <Badge variant="outline"
+              className={`${card.trend.isPositive ? 'text-green-500' : 'text-red-500'}`}
+              >
                 <TrendIcon isPositive={card.trend.isPositive} />
-                {formatTrendValue(card.trend.value)}
+                {formatTrendValue(card.trend.value, card.trend.isPositive)}
               </Badge>
             </CardAction>
           </CardHeader>

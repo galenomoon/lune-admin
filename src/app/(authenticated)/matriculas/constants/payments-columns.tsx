@@ -102,12 +102,14 @@ export const paymentColumnsDashboard = [
         PAID: "bg-green-50 border-green-500 text-green-500 dark:bg-green-900 dark:border-green-900 dark:text-green-200",
         OVERDUE: "bg-red-50 border-red-500 text-red-500 dark:bg-orange-900 dark:border-orange-900 dark:text-orange-200",
         CANCELED: "bg-red-50 border-red-500 text-red-500 dark:bg-red-900 dark:border-red-900 dark:text-red-200",
+        RENEW: "bg-blue-50 border-blue-500 text-blue-500 dark:bg-blue-900 dark:border-blue-900 dark:text-blue-200",
       };
       const statusLabel = {
         PENDING: "Pendente",
         PAID: "Pago",
         OVERDUE: "Vencido",
         CANCELED: "Cancelado",
+        RENEW: "Renovar",
       };
       return (
         <Badge
