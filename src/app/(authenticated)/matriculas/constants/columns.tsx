@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { UpdateEnrollmentDialog } from "../_components/update-enrollment-dialog";
+import { Clock, User } from "lucide-react";
 
 const statusLabel = {
   PENDING: "Pendente",
@@ -13,25 +14,32 @@ const statusLabel = {
 };
 
 export const columns: ColumnDef<StudentTable>[] = [
-  { accessorKey: "studentName", header: "Nome do Aluno" },
-  { accessorKey: "daysToExpire", header: "Prazo para Expirar" },
   {
-    accessorKey: "phone",
-    header: "WhatsApp",
+    accessorKey: "studentName",
+    header: "Nome do Aluno",
     cell: ({ row }) => {
-      if (!row.original.phone) return "-";
-      const formattedPhone = row.original.phone
-        .replace(/\D/g, "")
-        .replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
       return (
         <a
-          className="dark:text-pink-400 text-purple-600 underline"
+          className=" flex items-center gap-2"
           href={`https://wa.me/${row.original.phone}`}
           target="_blank"
           rel="noopener noreferrer"
         >
-          {formattedPhone}
+          <User size={16} className="text-blue-500" />
+          {row.original.studentName}
         </a>
+      );
+    },
+  },
+  {
+    accessorKey: "daysToExpire",
+    header: "Prazo para Expirar",
+    cell: ({ row }) => {
+      return (
+        <span className="flex items-center gap-2 text-gray-500">
+          {row.original.daysToExpire && <Clock size={16} className="" />}
+          {row.original.daysToExpire}
+        </span>
       );
     },
   },
