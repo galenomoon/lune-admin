@@ -20,6 +20,11 @@ export const updateEnrollment = async (enrollmentId: string, updateData: UpdateE
   return data;
 };
 
+export const renewEnrollment = async (enrollmentId: string, planId: string) => {
+  const { data } = await api.post(`/api/v1/enrollment/renew/${enrollmentId}`, { planId });
+  return data;
+};
+
 export const updateStudent = async (studentId: string, studentData: Partial<PersonalDataSchema>) => {
   const { data } = await api.patch(`/api/v1/students/${studentId}`, studentData);
   return data;

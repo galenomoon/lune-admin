@@ -17,7 +17,13 @@ interface EnrollmentTabContextType {
     enrollment: EnrollmentWithDetails,
     studentData?: StudentDetails | null
   ) => void;
+  openRenewEnrollmentForm: (
+    enrollment: EnrollmentWithDetails,
+    studentData?: StudentDetails | null
+  ) => void;
+  closeRenewEnrollmentForm: () => void;
   closeEditEnrollmentForm: () => void;
+  isRenewingEnrollment: boolean;
   currentEnrollment: EnrollmentWithDetails | null;
   currentStudent: StudentDetails | null;
   cancelEnrollmentMutation: UseMutationResult<void, Error, string>;
@@ -31,7 +37,10 @@ interface EnrollmentTabContextType {
 export const EnrollmentTabContext = createContext<EnrollmentTabContextType>({
   isEditingEnrollment: false,
   openEditEnrollmentForm: () => {},
+  openRenewEnrollmentForm: () => {},
   closeEditEnrollmentForm: () => {},
+  closeRenewEnrollmentForm: () => {},
+  isRenewingEnrollment: false,
   currentEnrollment: null,
   currentStudent: null,
   cancelEnrollmentMutation: {} as UseMutationResult<void, Error, string>,
@@ -53,8 +62,7 @@ export const EnrollmentTabProvider = ({
     null
   );
   const [isEditingEnrollment, setIsEditingEnrollment] = useState(false);
-
-
+  const [isRenewingEnrollment, setIsRenewingEnrollment] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -82,6 +90,8 @@ export const EnrollmentTabProvider = ({
     onError: () => toast.error("Erro ao atualizar dados do aluno"),
   });
 
+  // ================== EDIT ENROLLMENT ==================
+
   const openEditEnrollmentForm = (
     enrollment: EnrollmentWithDetails,
     studentData?: StudentDetails | null
@@ -97,12 +107,34 @@ export const EnrollmentTabProvider = ({
     setCurrentStudent(null);
   };
 
+  // ================== RENEW ENROLLMENT ==================
+
+  const openRenewEnrollmentForm = (
+    enrollment: EnrollmentWithDetails,
+    studentData?: StudentDetails | null
+  ) => {
+    setCurrentEnrollment(enrollment);
+    setCurrentStudent(studentData || null);
+    setIsRenewingEnrollment(true);
+  };
+
+  const closeRenewEnrollmentForm = () => {
+    setIsRenewingEnrollment(false);
+    setCurrentEnrollment(null);
+    setCurrentStudent(null);
+  };
+
+  
+
   return (
     <EnrollmentTabContext.Provider
       value={{
         isEditingEnrollment,
         openEditEnrollmentForm,
         closeEditEnrollmentForm,
+        openRenewEnrollmentForm,
+        closeRenewEnrollmentForm,
+        isRenewingEnrollment,
         currentEnrollment,
         currentStudent,
         cancelEnrollmentMutation,

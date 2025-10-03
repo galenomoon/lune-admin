@@ -9,7 +9,8 @@ import {
   UserStar,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
-  Settings,
+  ChartBar,
+  Calculator,
 } from "lucide-react";
 
 import {
@@ -101,16 +102,21 @@ export function Sidebar() {
         //   isBlocked: true,
         // },
       ],
-    },
+    }, 
     {
-      label: "Configurações",
+      label: "Marketing",
       items: [
         {
-          title: "Configurações",
-          url: "/configuracoes",
-          icon: Settings,
+          title: "Tabela de Métricas",
+          url: "/tabela-de-metricas",
+          icon: ChartBar,
         },
-      ],
+        {
+          title: "Calculadora de Tráfego Pago",
+          url: "/calculadora-de-trafego-pago",
+          icon: Calculator,
+        }
+      ]
     },
   ];
 

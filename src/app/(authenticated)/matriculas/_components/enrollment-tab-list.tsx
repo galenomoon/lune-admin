@@ -11,6 +11,7 @@ import {
   GraduationCap,
   Pencil,
   Trash,
+  RefreshCcw,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -40,7 +41,7 @@ const daysOfWeek: Record<string, string> = {
 };
 
 const EnrollmentTabList = ({ enrollments, studentData }: EnrollmentTabListProps) => {
-  const { openEditEnrollmentForm, cancelEnrollmentMutation } = useEnrollmentTab();
+  const { openEditEnrollmentForm, cancelEnrollmentMutation, openRenewEnrollmentForm } = useEnrollmentTab();
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -53,6 +54,8 @@ const EnrollmentTabList = ({ enrollments, studentData }: EnrollmentTabListProps)
       case "canceled":
       case "cancelado":
         return "dark:bg-red-900 bg-red-100 dark:text-red-200 text-red-800";
+      case "renew":
+        return "dark:bg-blue-900 bg-blue-100 dark:text-blue-200 text-blue-800";
       default:
         return "dark:bg-zinc-800 bg-zinc-100 dark:text-zinc-300 text-zinc-800";
     }
@@ -60,6 +63,7 @@ const EnrollmentTabList = ({ enrollments, studentData }: EnrollmentTabListProps)
 
   const status = {
     active: "Ativo",
+    renew: "Renovar",
     pending: "Pendente",
     canceled: "Cancelado",
     archived: "Arquivado",
@@ -71,6 +75,10 @@ const EnrollmentTabList = ({ enrollments, studentData }: EnrollmentTabListProps)
 
   const handleCancelEnrollment = (enrollment: EnrollmentWithDetails) => {
     cancelEnrollmentMutation.mutate(enrollment.id);
+  };
+
+  const handleRenewEnrollment = (enrollment: EnrollmentWithDetails) => {
+    openRenewEnrollmentForm(enrollment, studentData);
   };
 
   return (
@@ -137,6 +145,13 @@ const EnrollmentTabList = ({ enrollments, studentData }: EnrollmentTabListProps)
                           >
                             <Pencil className="h-4 w-4" />
                             Editar matrícula
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleRenewEnrollment(enrollment)}
+                            className="text-blue-600"
+                          >
+                            <RefreshCcw className="h-4 w-4 text-blue-600" />
+                            Renovar matrícula
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleCancelEnrollment(enrollment)}

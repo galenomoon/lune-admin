@@ -9,6 +9,7 @@ const statusLabel = {
   PAID: "Pago",
   CANCELED: "Cancelado",
   OVERDUE: "Atrasado",
+  RENEW: "Renovar",
 };
 
 export const columns: ColumnDef<StudentTable>[] = [
@@ -18,8 +19,10 @@ export const columns: ColumnDef<StudentTable>[] = [
     accessorKey: "phone",
     header: "WhatsApp",
     cell: ({ row }) => {
-      if (!row.original.phone) return '-';
-      const formattedPhone = row.original.phone.replace(/\D/g, "").replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+      if (!row.original.phone) return "-";
+      const formattedPhone = row.original.phone
+        .replace(/\D/g, "")
+        .replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
       return (
         <a
           className="dark:text-pink-400 text-purple-600 underline"
@@ -48,7 +51,9 @@ export const columns: ColumnDef<StudentTable>[] = [
             row.original.status === "CANCELED" &&
               "border-red-100 bg-red-100 text-red-900 dark:border-red-900 dark:bg-red-900 dark:text-red-200",
             row.original.status === "OVERDUE" &&
-              "border-orange-100 bg-orange-100 text-orange-900 dark:border-orange-900 dark:bg-orange-900 dark:text-orange-200"
+              "border-orange-100 bg-orange-100 text-orange-900 dark:border-orange-900 dark:bg-orange-900 dark:text-orange-200",
+            row.original.status === "RENEW" &&
+              "border-blue-100 bg-blue-100 text-blue-900 dark:border-blue-900 dark:bg-blue-900 dark:text-blue-200"
           )}
         >
           {statusLabel[row.original.status]}
@@ -62,7 +67,7 @@ export const columns: ColumnDef<StudentTable>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex gap-2">
-          <UpdateEnrollmentDialog enrollment={row.original} />
+          <UpdateEnrollmentDialog currentStudent={row.original} />
         </div>
       );
     },

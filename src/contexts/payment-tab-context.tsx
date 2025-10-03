@@ -47,6 +47,7 @@ export const PaymentTabProvider = ({
     mutationKey: ["toggle-payment"],
     mutationFn: (payment: Payment) => togglePaymentStatus(payment.id),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student"]});      
       queryClient.invalidateQueries({ queryKey: ["students"]});      
       queryClient.invalidateQueries({ queryKey: ["dashboardStats"]});
 

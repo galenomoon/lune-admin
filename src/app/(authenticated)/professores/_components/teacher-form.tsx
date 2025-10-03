@@ -86,10 +86,6 @@ export default function TeacherForm({
             <FormInput
               name="instagram"
               control={form.control}
-              mask="@************"
-              maskOptions={{
-                placeholder: "",
-              }}
               label="Instagram"
               placeholder="Digite o Instagram"
             />

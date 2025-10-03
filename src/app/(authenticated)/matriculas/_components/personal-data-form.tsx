@@ -88,11 +88,6 @@ export default function PersonalDataForm({
               control={form.control}
               label="Instagram"
               placeholder="@instagram"
-              mask="@*********************"
-              maskOptions={{
-                placeholder: "@                     ",
-                showMaskOnHover: true,
-              }}
             />
             <FormInput
               name="email"

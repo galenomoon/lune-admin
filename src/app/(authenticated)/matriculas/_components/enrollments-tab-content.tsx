@@ -3,6 +3,7 @@ import { useEnrollmentTab } from "@/contexts/enrollment-tab-context";
 import { EnrollmentTabEdit } from "./enrollment-tab-edit";
 import { EnrollmentTabList } from "./enrollment-tab-list";
 import { StudentDetails } from "@/interfaces/students";
+import { EnrollmentTabRenew } from "./enrollment-tab-renew";
 
 export const EnrollmentsTabContent = ({
   enrollments = [],
@@ -11,12 +12,20 @@ export const EnrollmentsTabContent = ({
   enrollments: EnrollmentWithDetails[];
   studentData: StudentDetails;
 }) => {
-  const { isEditingEnrollment } = useEnrollmentTab();
+  const { isEditingEnrollment, isRenewingEnrollment } = useEnrollmentTab();
 
   if (isEditingEnrollment) {
     return (
       <section className="flex flex-col max-h-[500px] pb-8">
         <EnrollmentTabEdit />
+      </section>
+    );
+  }
+
+  if (isRenewingEnrollment) {
+    return (
+      <section className="flex flex-col max-h-[500px] pb-8">
+        <EnrollmentTabRenew />
       </section>
     );
   }

@@ -34,16 +34,16 @@ import EnrollmentsTabEdit from "./enrollments-tab-edit";
 import { StudentDetails } from "@/interfaces/students";
 
 export function UpdateEnrollmentDialog({
-  enrollment,
+  currentStudent,
 }: {
-  enrollment: StudentTable;
+  currentStudent: StudentTable;
 }) {
   const [activeTab, setActiveTab] = useState("personal-data");
   const [isOpen, setIsOpen] = useState(false);
 
   const { data: student, isPending } = useQuery({
-    queryKey: ["student", enrollment.student.id],
-    queryFn: () => getStudentById(enrollment.student.id),
+    queryKey: ["student", currentStudent.id],
+    queryFn: () => getStudentById(currentStudent.id),
     enabled: isOpen,
   });
 
@@ -127,7 +127,7 @@ export function UpdateEnrollmentDialog({
       </DialogTrigger>
       <DialogContent className="flex flex-col sm:min-w-4xl max-h-[90vh] min-h-[80vh] ">
         <DialogHeader className="h-fit flex-row">
-          <DialogTitle>{enrollment.studentName}</DialogTitle>
+          <DialogTitle>{currentStudent.studentName}</DialogTitle>
         </DialogHeader>
 
         <Tabs

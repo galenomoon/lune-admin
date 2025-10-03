@@ -7,7 +7,7 @@ export interface StudentTable {
   studentName: string;
   daysToExpire: string;
   phone: string;
-  status: "PENDING" | "PAID" | "CANCELED" | "OVERDUE";
+  status: "PENDING" | "PAID" | "CANCELED" | "OVERDUE" | "RENEW";
   student: Student;
 }
 
