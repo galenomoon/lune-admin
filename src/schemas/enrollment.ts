@@ -28,7 +28,7 @@ export const enrollmentSchema = z.object({
   paymentDay: z.string().min(1, "Dia de pagamento é obrigatório"),
   classId: z.string().min(1, "Turma é obrigatória"),
   modalityId: z.string().min(1, "Modalidade é obrigatória"),
-  signature: z.string().min(1, "Assinatura é obrigatória"),
+  signature: z.string().optional(),
 });
 
 export type PersonalDataSchema = z.infer<typeof personalDataSchema>;

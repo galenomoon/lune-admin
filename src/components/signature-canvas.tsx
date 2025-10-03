@@ -8,7 +8,7 @@ interface SignatureCanvasProps {
   value?: string;
 }
 
-export function SignatureCanvasComponent({ onSignatureChange }: SignatureCanvasProps) {
+export function SignatureCanvasComponent({ onSignatureChange, value }: SignatureCanvasProps) {
   const signatureRef = useRef<SignatureCanvas>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
