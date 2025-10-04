@@ -19,6 +19,10 @@ import { toast } from "sonner";
 import { deletePlan, updatePlan } from "@/api/plan";
 import { PlanTable } from "@/interfaces/plan";
 
+type PlanFormData = Omit<PlanSchema, 'durationInDays'> & {
+  durationInDays: number;
+};
+
 type UpdatePlanDialogProps = {
   plan: PlanTable;
 };
@@ -28,7 +32,7 @@ export function UpdatePlanDialog({ plan }: UpdatePlanDialogProps) {
   const [open, setOpen] = useState(false);
 
   const planForm = useForm<PlanSchema>({
-    resolver: zodResolver(planSchema),
+    resolver: zodResolver(planSchema) as any,
     defaultValues: {
       name: plan.name || "",
       weeklyClasses: plan.weeklyClasses || 1,
@@ -47,7 +51,7 @@ export function UpdatePlanDialog({ plan }: UpdatePlanDialogProps) {
 
   const { mutate: updatePlanMutation, isPending } = useMutation({
     mutationKey: ["updatePlan", plan.id],
-    mutationFn: async (data: PlanSchema) => await updatePlan(plan.id, data),
+    mutationFn: async (data: PlanFormData) => await updatePlan(plan.id, data),
     onSuccess: () => {
       toast.success("Plano atualizado com sucesso");
       queryClient.invalidateQueries({ queryKey: ["plans"] });
@@ -72,7 +76,7 @@ export function UpdatePlanDialog({ plan }: UpdatePlanDialogProps) {
       },
     });
 
-  const handleSubmit = (data: PlanSchema) => updatePlanMutation(data);
+  const handleSubmit = (data: PlanFormData) => updatePlanMutation(data);
 
   return (
     <Dialog
