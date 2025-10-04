@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const metricSchema = z.object({
-  format: z.enum(["reels", "carousel", "static-photo", "live"], {
-    required_error: "Formato é obrigatório",
+  format: z.union([z.literal("reels"), z.literal("carousel"), z.literal("static-photo"), z.literal("live")], {
+    error: "Formato é obrigatório",
   }),
   duration: z.number().min(0, "Duração deve ser maior ou igual a 0").optional(),
   quantity: z.number().min(1, "Quantidade deve ser pelo menos 1").optional(),
