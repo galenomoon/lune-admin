@@ -23,7 +23,7 @@ export function CreatePlanDialog() {
   const [open, setOpen] = useState(false);
 
   const planForm = useForm<PlanSchema>({
-    resolver: zodResolver(planSchema) as any,
+    resolver: zodResolver(planSchema),
     defaultValues: {
       name: "",
       weeklyClasses: 1,

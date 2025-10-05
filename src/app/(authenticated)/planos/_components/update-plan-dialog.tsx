@@ -32,7 +32,7 @@ export function UpdatePlanDialog({ plan }: UpdatePlanDialogProps) {
   const [open, setOpen] = useState(false);
 
   const planForm = useForm<PlanSchema>({
-    resolver: zodResolver(planSchema) as any,
+    resolver: zodResolver(planSchema),
     defaultValues: {
       name: plan.name || "",
       weeklyClasses: plan.weeklyClasses || 1,
