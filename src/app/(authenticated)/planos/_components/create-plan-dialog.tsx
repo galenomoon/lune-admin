@@ -29,7 +29,7 @@ export function CreatePlanDialog() {
       weeklyClasses: 1,
       durationInDays: "30",
       isSecondary: false,
-      price: 0,
+      price: "",
     },
   });
 

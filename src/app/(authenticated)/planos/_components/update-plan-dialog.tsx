@@ -36,14 +36,14 @@ export function UpdatePlanDialog({ plan }: UpdatePlanDialogProps) {
       weeklyClasses: plan.weeklyClasses || 1,
       durationInDays: plan.durationInDays?.toString() || "30",
       isSecondary: !!plan.isSecondary || false,
-      price: plan?.price || 0,
+      price: plan?.price.toString() || "",
     },
     values: {
       name: plan.name || "",
       weeklyClasses: plan.weeklyClasses || 1,
       durationInDays: plan.durationInDays?.toString() || "30",
       isSecondary: !!plan.isSecondary || false,
-      price: plan?.price || 0,
+      price: plan?.price.toString() || "",
     },
   });
 
@@ -88,7 +88,7 @@ export function UpdatePlanDialog({ plan }: UpdatePlanDialogProps) {
             weeklyClasses: plan.weeklyClasses || 1,
             durationInDays: plan.durationInDays?.toString() || "30",
             isSecondary: !!plan.isSecondary || false,
-            price: plan?.price || 0,
+            price: plan?.price.toString() || "",
           });
         }
       }}
