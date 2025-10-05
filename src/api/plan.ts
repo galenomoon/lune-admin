@@ -11,7 +11,8 @@ export const getPlans = async () => {
 export const createPlan = async (plan: PlanSchema) => {
   const parsedPlan = {  
     ...plan,
-    price: plan.price,
+    durationInDays: Number(plan.durationInDays),
+    price: currencyToFloat(plan.price),
   };
   const { data } = await api.post<PlanTable>("api/v1/plans", parsedPlan);
   return data;
@@ -20,7 +21,8 @@ export const createPlan = async (plan: PlanSchema) => {
 export const updatePlan = async (id: string, plan: PlanSchema) => {
   const parsedPlan = {
     ...plan,
-    price: plan.price,
+    durationInDays: Number(plan.durationInDays),
+    price: currencyToFloat(plan.price),
   };
 
   const { data } = await api.patch<PlanTable>(`api/v1/plans/${id}`, parsedPlan);
