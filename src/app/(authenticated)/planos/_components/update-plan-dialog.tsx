@@ -19,9 +19,7 @@ import { toast } from "sonner";
 import { deletePlan, updatePlan } from "@/api/plan";
 import { PlanTable } from "@/interfaces/plan";
 
-type PlanFormData = Omit<PlanSchema, 'durationInDays'> & {
-  durationInDays: number;
-};
+type PlanFormData = PlanSchema;
 
 type UpdatePlanDialogProps = {
   plan: PlanTable;
@@ -36,16 +34,16 @@ export function UpdatePlanDialog({ plan }: UpdatePlanDialogProps) {
     defaultValues: {
       name: plan.name || "",
       weeklyClasses: plan.weeklyClasses || 1,
-      durationInDays: plan.durationInDays || 30,
+      durationInDays: plan.durationInDays?.toString() || "30",
       isSecondary: !!plan.isSecondary || false,
-      price: plan?.price?.toFixed(2) || "",
+      price: plan?.price || 0,
     },
     values: {
       name: plan.name || "",
       weeklyClasses: plan.weeklyClasses || 1,
-      durationInDays: plan.durationInDays || 30,
+      durationInDays: plan.durationInDays?.toString() || "30",
       isSecondary: !!plan.isSecondary || false,
-      price: plan?.price?.toFixed(2) || "",
+      price: plan?.price || 0,
     },
   });
 
@@ -88,9 +86,9 @@ export function UpdatePlanDialog({ plan }: UpdatePlanDialogProps) {
           planForm.reset({
             name: plan.name || "",
             weeklyClasses: plan.weeklyClasses || 1,
-            durationInDays: plan.durationInDays || 30,
+            durationInDays: plan.durationInDays?.toString() || "30",
             isSecondary: !!plan.isSecondary || false,
-            price: (plan.price).toString() || "",
+            price: plan?.price || 0,
           });
         }
       }}

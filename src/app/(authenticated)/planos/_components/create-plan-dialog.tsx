@@ -27,9 +27,9 @@ export function CreatePlanDialog() {
     defaultValues: {
       name: "",
       weeklyClasses: 1,
-      durationInDays: 30,
+      durationInDays: "30",
       isSecondary: false,
-      price: '',
+      price: 0,
     },
   });
 
