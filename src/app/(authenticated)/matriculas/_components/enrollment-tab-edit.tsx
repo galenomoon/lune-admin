@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronLeft, Link, Copy, Loader2 } from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 import { useEnrollmentTab } from "@/contexts/enrollment-tab-context";
 import {
   GridClass,
@@ -14,7 +14,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getEnrollmentFormData } from "@/api/student";
-import { updateEnrollment, generateSignatureLink } from "@/api/enrollment";
+import { updateEnrollment } from "@/api/enrollment";
 import {
   FormField,
   FormItem,
@@ -86,34 +86,8 @@ const EnrollmentTabEdit = () => {
     },
   });
 
-  const generateLinkMutation = useMutation({
-    mutationKey: ["generate-signature-link"],
-    mutationFn: () => {
-      if (!currentEnrollment?.id) throw new Error("Enrollment ID not found");
-      return generateSignatureLink(currentEnrollment.id);
-    },
-    onSuccess: (data) => {
-      // Armazenar o link gerado no formulário
-      form.setValue("generatedLink", data.link);
-      toast.success("Link de assinatura gerado com sucesso");
-    },
-    onError: () => {
-      toast.error("Erro ao gerar link de assinatura");
-    },
-  });
-
   const onSubmit = (data: EnrollmentEditSchema) => {
     updateEnrollmentMutation.mutate(data);
-  };
-
-  const copyLink = () => {
-    const generatedLink = form.getValues("generatedLink");
-    if (generatedLink) {
-      navigator.clipboard.writeText(generatedLink);
-      toast.success("Link copiado para a área de transferência");
-    } else {
-      toast.error("Nenhum link para copiar");
-    }
   };
 
   return (
@@ -227,51 +201,6 @@ const EnrollmentTabEdit = () => {
                   )}
                 />
               </div>
-
-              {/* Assinatura Remota integrada */}
-              <FormField
-                control={form.control}
-                name="generatedLink"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Assinatura Remota</FormLabel>
-                    <div className="flex w-full gap-3">
-                      <Button
-                        type="button"
-                        onClick={() => generateLinkMutation.mutate()}
-                        disabled={generateLinkMutation.isPending}
-                        variant="outline"
-                        className="flex items-center gap-2"
-                      >
-                        {generateLinkMutation.isPending ? (
-                          <Loader2 className="size-4 animate-spin" />
-                        ) : (
-                          <Link className="size-4" />
-                        )}
-                        Gerar Link
-                      </Button>
-                      <div className="border max-w-[300px] w-full overflow-auto border-gray-300 rounded-lg px-4 py-1">
-                        <p className="select-all line-clamp-1">
-                          {generateLinkMutation.isPending
-                            ? "Carregando link..."
-                            : form.watch("generatedLink") ||
-                              "Nenhum link gerado"}
-                        </p>
-                      </div>
-                      {form.watch("generatedLink") && (
-                        <Button
-                          type="button"
-                          onClick={copyLink}
-                          variant="outline"
-                          className="flex items-center gap-2"
-                        >
-                          <Copy className="size-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </FormItem>
-                )}
-              />
             </div>
 
             {/* Botões de ação */}

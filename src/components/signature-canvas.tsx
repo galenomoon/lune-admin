@@ -6,9 +6,10 @@ import { Card } from "@/components/ui/card";
 interface SignatureCanvasProps {
   onSignatureChange: (signature: string) => void;
   value?: string;
+  isPreviewMode?: boolean;
 }
 
-export function SignatureCanvasComponent({ onSignatureChange, value }: SignatureCanvasProps) {
+export function SignatureCanvasComponent({ onSignatureChange, value, isPreviewMode = false }: SignatureCanvasProps) {
   const signatureRef = useRef<SignatureCanvas>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -27,6 +28,12 @@ export function SignatureCanvasComponent({ onSignatureChange, value }: Signature
 
     return () => window.removeEventListener("resize", resizeCanvas);
   }, []);
+
+  useEffect(() => {
+    if (value && signatureRef.current && !!isPreviewMode) {
+      signatureRef.current.fromDataURL(value);
+    }
+  }, [isPreviewMode, value]);
 
   const clearSignature = () => {
     if (signatureRef.current) {

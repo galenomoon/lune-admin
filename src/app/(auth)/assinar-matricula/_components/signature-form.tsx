@@ -30,7 +30,6 @@ interface SignatureFormProps {
 }
 
 export default function SignatureForm({
-  onSignatureChange,
   onSendSignature,
   isLoading,
   hasError,
