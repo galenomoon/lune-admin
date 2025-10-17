@@ -207,9 +207,9 @@ export default function WeekGrid({
                         const item = schedule?.[
                           dayKey as keyof GridSchedule
                         ] as GridItem;
-                        const hasTrialStudents =
-                          item?.trialStudents &&
-                          item?.trialStudents?.length > 0;
+
+                        const hasTrialStudents = item?.trialStudentsList?.length as never as number > 0;
+                        const qtdTrialStudents = item?.trialStudentsList?.length as never as number;
 
                         return (
                           <TableCell key={dayKey} className="p-1">
@@ -229,10 +229,10 @@ export default function WeekGrid({
                                       {formatTime(item.endTime)}
                                     </div>
                                     <div className="text-xs text-gray-600">
-                                      {item.level} • {item.teacherName}
+                                    {item.description} • {item.level}
                                     </div>
                                   </article>
-                                  <div className="flex items-center w-full justify-center gap-4">
+                                  <div className="flex items-center w-full justify-center gap-2">
                                     <Badge
                                       variant="outline"
                                       className={`text-xs ${getStatusColor(
@@ -244,7 +244,7 @@ export default function WeekGrid({
                                       {item.enrolledStudents || 0}/
                                       {item.maxStudents || 1}
                                     </Badge>
-                                    {hasTrialStudents ? (
+                                    {!hasTrialStudents ? (
                                       <></>
                                     ) : (
                                       <Badge
@@ -252,7 +252,7 @@ export default function WeekGrid({
                                         className="text-xs"
                                       >
                                         <Star className="w-4 h-4" />
-                                        {item?.trialStudents?.length || 0}
+                                        {qtdTrialStudents}
                                       </Badge>
                                     )}
                                   </div>

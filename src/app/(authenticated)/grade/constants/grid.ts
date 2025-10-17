@@ -12,8 +12,10 @@ export const DAY_LABELS: Record<string, string> = {
 };
 
 export const AGE_RANGE_OPTIONS = [
+  { value: "Pré-Baby", label: "Pré-Baby" },
   { value: "Baby", label: "Baby" },
   { value: "Infantil", label: "Infantil" },
+  { value: "Infanto-Juvenil", label: "Infanto-Juvenil" },
   { value: "Juvenil", label: "Juvenil" },
   { value: "Adulto", label: "Adulto" },
 ];
