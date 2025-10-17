@@ -115,11 +115,12 @@ export default function CalendarTrialClassDate({
               }}
             >
               <div className="font-medium truncate">
-                {event.lead?.firstName} {event.lead?.lastName}
+                {event.lead?.firstName.split(' ')[0]} {event.lead?.lastName.split(' ')[1]}
               </div>
               <div className={`text-xs ${getTextColor(event.trialStatus || 'SCHEDULED')}`}>
-                {formatTime(event?.gridItem?.startTime || "")} -{" "}
-                {event.gridItem?.class?.modality?.name}
+                {/* {formatTime(event?.gridItem?.startTime || "")} -{" "} */}
+                {/* {event.gridItem?.class?.modality?.name} */}
+                {event.gridItem?.class?.modality?.name} {event.gridItem?.class?.description}
               </div>
             </button>
           );
