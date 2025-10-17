@@ -20,9 +20,10 @@ export const AGE_RANGE_OPTIONS = [
 
 export const generateTimeOptions = () => {
   const options = [];
-  for (let i = 0; i < 33; i++) {
-    const hours = Math.floor(i / 2) + 7;
-    const minutes = i % 2 === 0 ? "00" : "30";
+  for (let i = 0; i < 68; i++) {
+    const hours = Math.floor(i / 4) + 7;
+    const minutesValue = (i % 4) * 15;
+    const minutes = minutesValue === 0 ? "00" : minutesValue.toString();
     const timeLabel = `${hours < 10 ? "0" : ""}${hours}:${minutes}`;
     options.push({ value: timeLabel, label: timeLabel });
   }
