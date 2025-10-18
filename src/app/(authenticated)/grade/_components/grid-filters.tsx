@@ -21,8 +21,10 @@ export default function GridFilters({
   setSelectedFilter,
 }: GridFiltersProps) {
   const ageRangeOptions = [
+    { value: "Pré-Baby", label: "Pré-Baby" },
     { value: "Baby", label: "Baby" },
     { value: "Infantil", label: "Infantil" },
+    { value: "Infanto-Juvenil", label: "Infanto-Juvenil" },
     { value: "Juvenil", label: "Juvenil" },
     { value: "Adulto", label: "Adulto" },
   ];

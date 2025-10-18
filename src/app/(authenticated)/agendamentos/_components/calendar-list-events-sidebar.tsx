@@ -40,6 +40,21 @@ export default function CalendarListEventsSidebar({
     return eventDate.toDateString() === date?.toDateString();
   });
 
+  // Agrupar eventos por classe
+  const groupedEvents = useMemo(() => {
+    const groups: Record<string, TrialStudent[]> = {};
+    
+    dayEvents.forEach((event) => {
+      const classId = event.gridItem?.class?.id || 'sem-classe';
+      if (!groups[classId]) {
+        groups[classId] = [];
+      }
+      groups[classId].push(event);
+    });
+    
+    return groups;
+  }, [dayEvents]);
+
   return (
     <Sidebar collapsible="offcanvas" side="right" variant="sidebar">
       <SidebarHeader />
@@ -63,13 +78,35 @@ export default function CalendarListEventsSidebar({
               Novo Agendamento
             </Button>
 
-            {dayEvents.map((event) => (
-              <EventItem
-                key={event.id}
-                event={event}
-                onEventClick={onEventClick}
-              />
-            ))}
+            {Object.entries(groupedEvents).map(([classId, classEvents], index) => {
+              const firstEvent = classEvents[0];
+              const modality = firstEvent?.gridItem?.class?.modality?.name;
+              const classLevel = firstEvent?.gridItem?.class?.classLevel?.name;
+              const classDescription = firstEvent?.gridItem?.class?.description;
+
+              return (
+                <div key={classId} className="flex flex-col gap-2">
+                  {index > 0 && <SidebarSeparator className="my-2" />}
+                  
+                  <div className="px-2 py-1">
+                    <p className="text-sm font-semibold text-muted-foreground capitalize">
+                      {modality} {classLevel && `• ${classDescription}`}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {classEvents.length} {classEvents.length === 1 ? 'agendamento' : 'agendamentos'}
+                    </p>
+                  </div>
+
+                  {classEvents.map((event) => (
+                    <EventItem
+                      key={event.id}
+                      event={event}
+                      onEventClick={onEventClick}
+                    />
+                  ))}
+                </div>
+              );
+            })}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
@@ -85,12 +122,13 @@ export const EventItem = ({
   event: TrialStudent;
   onEventClick: (event: TrialStudent) => void;
 }) => {
-  const { startTime, endTime, modality, classLevel, lead } = useMemo(() => {
+  const { startTime, endTime, modality, classLevel, lead, classDescription } = useMemo(() => {
     return {
       startTime: event?.gridItem?.startTime,
       endTime: event?.gridItem?.endTime,
       modality: event?.gridItem?.class?.modality?.name,
       classLevel: event?.gridItem?.class?.classLevel?.name,
+      classDescription: event?.gridItem?.class?.description,
       lead: event?.lead,
     };
   }, [event]);
@@ -115,20 +153,20 @@ export const EventItem = ({
   return (
     <Card
       key={event.id}
-      className="flex flex-row w-full justify-between gap-2 pl-0 pr-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors duration-200"
+      className="flex flex-row w-full justify-between gap-2 pl-0 pr-4 py-2 cursor-pointer transition-colors duration-200"
       onClick={() => onEventClick(event)}
     >
       <section className="flex flex-col gap-1 w-full px-3">
         <CardHeader className="flex items-center px-0">
           <div className={`w-2 h-2 ${getStatusColor(event.trialStatus || 'SCHEDULED')} rounded-full`} />
           <CardTitle className="capitalize text-sm">
-            {modality} {classLevel && `• ${classLevel}`}
+            {lead?.firstName} {lead?.lastName.split(' ')[1]}
           </CardTitle>
         </CardHeader>
         <CardContent className="px-0 flex-col">
           <CardDescription className="text-xs capitalize flex-row flex items-center gap-2">
             <User className="w-3 h-3" />
-            {lead?.firstName} {lead?.lastName}
+            {modality} {classLevel && `• ${classDescription}`}
           </CardDescription>
           <CardDescription className="text-xs capitalize flex-row flex items-center gap-2">
             <Clock className="w-3 h-3" />

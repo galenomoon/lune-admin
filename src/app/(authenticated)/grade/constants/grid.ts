@@ -12,17 +12,20 @@ export const DAY_LABELS: Record<string, string> = {
 };
 
 export const AGE_RANGE_OPTIONS = [
+  { value: "Pré-Baby", label: "Pré-Baby" },
   { value: "Baby", label: "Baby" },
   { value: "Infantil", label: "Infantil" },
+  { value: "Infanto-Juvenil", label: "Infanto-Juvenil" },
   { value: "Juvenil", label: "Juvenil" },
   { value: "Adulto", label: "Adulto" },
 ];
 
 export const generateTimeOptions = () => {
   const options = [];
-  for (let i = 0; i < 33; i++) {
-    const hours = Math.floor(i / 2) + 7;
-    const minutes = i % 2 === 0 ? "00" : "30";
+  for (let i = 0; i < 68; i++) {
+    const hours = Math.floor(i / 4) + 7;
+    const minutesValue = (i % 4) * 15;
+    const minutes = minutesValue === 0 ? "00" : minutesValue.toString();
     const timeLabel = `${hours < 10 ? "0" : ""}${hours}:${minutes}`;
     options.push({ value: timeLabel, label: timeLabel });
   }

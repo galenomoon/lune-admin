@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { GridItem, GridSchedule } from "@/interfaces/grid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, Filter, User2, Star, Clock, Clock1 } from "lucide-react";
+import { Search, Plus, Filter, User2, Star, Clock, Clock1, Phone, Calendar } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -19,6 +19,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { dateToString } from "@/utils/parse-date";
 
 interface WeekGridProps {
   data: GridSchedule[];
@@ -53,10 +61,18 @@ export default function WeekGrid({
   FilterChildren,
 }: WeekGridProps) {
   const [searchValue, setSearchValue] = useState("");
+  const [isStudentsModalOpen, setIsStudentsModalOpen] = useState(false);
+  const [selectedGridItem, setSelectedGridItem] = useState<GridItem | null>(null);
 
   const handleSearch = (value: string) => {
     setSearchValue(value);
     onSearch(value);
+  };
+
+  const handleOpenStudentsModal = (item: GridItem, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedGridItem(item);
+    setIsStudentsModalOpen(true);
   };
 
   const getTimeSlots = () => {
@@ -207,9 +223,9 @@ export default function WeekGrid({
                         const item = schedule?.[
                           dayKey as keyof GridSchedule
                         ] as GridItem;
-                        const hasTrialStudents =
-                          item?.trialStudents &&
-                          item?.trialStudents?.length > 0;
+
+                        const hasTrialStudents = item?.trialStudentsList?.length as never as number > 0;
+                        const qtdTrialStudents = item?.trialStudentsList?.length as never as number;
 
                         return (
                           <TableCell key={dayKey} className="p-1">
@@ -229,30 +245,32 @@ export default function WeekGrid({
                                       {formatTime(item.endTime)}
                                     </div>
                                     <div className="text-xs text-gray-600">
-                                      {item.level} • {item.teacherName}
+                                      {item.description} • {item.level}
                                     </div>
                                   </article>
-                                  <div className="flex items-center w-full justify-center gap-4">
+                                  <div className="flex items-center w-full justify-center gap-2">
                                     <Badge
                                       variant="outline"
-                                      className={`text-xs ${getStatusColor(
+                                      className={`text-xs cursor-pointer hover:opacity-80 transition-opacity ${getStatusColor(
                                         item.enrolledStudents || 0,
                                         item.maxStudents || 1
                                       )}`}
+                                      onClick={(e) => handleOpenStudentsModal(item, e)}
                                     >
                                       <User2 className="w-4 h-4" />
                                       {item.enrolledStudents || 0}/
                                       {item.maxStudents || 1}
                                     </Badge>
-                                    {hasTrialStudents ? (
+                                    {!hasTrialStudents ? (
                                       <></>
                                     ) : (
                                       <Badge
                                         variant="outline"
-                                        className="text-xs"
+                                        className="text-xs cursor-pointer hover:opacity-80 transition-opacity"
+                                        onClick={(e) => handleOpenStudentsModal(item, e)}
                                       >
                                         <Star className="w-4 h-4" />
-                                        {item?.trialStudents?.length || 0}
+                                        {qtdTrialStudents}
                                       </Badge>
                                     )}
                                   </div>
@@ -280,6 +298,105 @@ export default function WeekGrid({
           </Table>
         </CardContent>
       </Card>
+
+      {/* Modal de Alunos */}
+      <Dialog open={isStudentsModalOpen} onOpenChange={setIsStudentsModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              Alunos - {selectedGridItem?.modality} • {selectedGridItem?.level}
+            </DialogTitle>
+          </DialogHeader>
+          <Tabs defaultValue="enrolled" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="enrolled" className="gap-2">
+                <User2 className="w-4 h-4" />
+                Matriculados ({selectedGridItem?.enrolledStudentsList?.length || 0})
+              </TabsTrigger>
+              <TabsTrigger value="trial" className="gap-2">
+                <Star className="w-4 h-4" />
+                Aula Experimental ({selectedGridItem?.trialStudentsList?.length || 0})
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="enrolled" className="space-y-4">
+              <div className="max-h-[400px] overflow-y-auto">
+                {selectedGridItem?.enrolledStudentsList && selectedGridItem.enrolledStudentsList.length > 0 ? (
+                  <div className="space-y-2">
+                    {selectedGridItem.enrolledStudentsList.map((enrollment) => (
+                      <Card key={enrollment.id} className="h-fit py-0">
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                <User2 className="w-5 h-5 text-primary" />
+                              </div>
+                              <div>
+                                <p className="font-medium">
+                                  {enrollment.student?.firstName} {enrollment.student?.lastName}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <User2 className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                    <p>Nenhum aluno matriculado nesta aula</p>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="trial" className="space-y-4">
+              <div className="max-h-[400px] overflow-y-auto">
+                {selectedGridItem?.trialStudentsList && selectedGridItem.trialStudentsList.length > 0 ? (
+                  <div className="space-y-2">
+                    {selectedGridItem.trialStudentsList.map((trialStudent) => (
+                      <Card key={trialStudent.id} className="h-fit py-0">
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center">
+                                <Star className="w-5 h-5 text-yellow-500" />
+                              </div>
+                              <div>
+                                <p className="font-medium">
+                                  {trialStudent.lead?.firstName} {trialStudent.lead?.lastName}
+                                </p>
+                                <div className="text-sm text-muted-foreground space-y-0.5">
+                                  <p className="flex items-center  gap-2">
+                                    <Calendar className="w-4 h-4" />
+                                    {dateToString(trialStudent.date)}
+                                  </p>
+                                  {trialStudent.lead?.phone && (
+                                    <p className="flex items-center  gap-2">
+                                      <Phone className="w-4 h-4" />
+                                      {trialStudent.lead.phone}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Star className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                    <p>Nenhum aluno experimental agendado nesta aula</p>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
