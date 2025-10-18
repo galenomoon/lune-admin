@@ -60,8 +60,8 @@ export default function DashboardPage() {
           value: dashboardStats.cards.enrollmentsToClasses.value,
           trend: dashboardStats.cards.enrollmentsToClasses.trend,
           footer: {
-            primary: "Matrículas ativas",
-            secondary: "Total de turmas disponíveis",
+            primary: "Média de alunos por turma",
+            secondary: `Temos ${dashboardStats.cards.enrollmentsToClasses.enrollments} matrículas e ${dashboardStats.cards.enrollmentsToClasses.classes} turmas`,
           },
         },
         {
