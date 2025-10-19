@@ -8,10 +8,8 @@ import {
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import WorkedHourForm from "./worked-hour-form";
-import { updateWorkedHour, deleteWorkedHour } from "@/api/worked-hours";
+import { updateWorkedHour, deleteWorkedHour, UpdateWorkedHourData } from "@/api/worked-hours";
 import { WorkedHour } from "@/interfaces/worked-hours";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +29,15 @@ interface UpdateWorkedHourDialogProps {
   selectedYear: number;
 }
 
+interface WorkedHourFormData {
+  teacherId: string;
+  modalityId: string;
+  classId: string;
+  workedAt: Date;
+  newEnrollmentsCount: number;
+  status?: "PENDING" | "DONE" | "CANCELED";
+}
+
 export default function UpdateWorkedHourDialog({
   workedHour,
   onClose,
@@ -41,7 +48,7 @@ export default function UpdateWorkedHourDialog({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const updateMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: UpdateWorkedHourData) => {
       if (!workedHour?.id) throw new Error("ID not found");
       return await updateWorkedHour(workedHour.id, data);
     },
@@ -50,7 +57,7 @@ export default function UpdateWorkedHourDialog({
       queryClient.invalidateQueries({ queryKey: ["worked-hours", selectedMonth, selectedYear] });
       onClose();
     },
-    onError: (error: any) => {
+    onError: (error: Error & { response?: { data?: { message?: string } } }) => {
       toast.error(error?.response?.data?.message || "Erro ao atualizar registro");
     },
   });
@@ -66,13 +73,18 @@ export default function UpdateWorkedHourDialog({
       setIsDeleteDialogOpen(false);
       onClose();
     },
-    onError: (error: any) => {
+    onError: (error: Error & { response?: { data?: { message?: string } } }) => {
       toast.error(error?.response?.data?.message || "Erro ao deletar registro");
     },
   });
 
-  const handleSubmit = (data: any) => {
-    updateMutation.mutate(data);
+  const handleSubmit = (data: WorkedHourFormData) => {
+    const updateData: UpdateWorkedHourData = {
+      workedAt: data.workedAt.toISOString(),
+      status: data.status,
+      teacherId: data.teacherId,
+    };
+    updateMutation.mutate(updateData);
   };
 
   const handleDelete = () => {
