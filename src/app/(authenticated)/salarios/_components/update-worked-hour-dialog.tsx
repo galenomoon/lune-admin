@@ -36,6 +36,7 @@ interface WorkedHourFormData {
   workedAt: Date;
   newEnrollmentsCount: number;
   status?: "PENDING" | "DONE" | "CANCELED";
+  priceSnapshot?: number;
 }
 
 export default function UpdateWorkedHourDialog({
@@ -83,6 +84,7 @@ export default function UpdateWorkedHourDialog({
       workedAt: data.workedAt.toISOString(),
       status: data.status,
       teacherId: data.teacherId,
+      priceSnapshot: data.priceSnapshot,
     };
     updateMutation.mutate(updateData);
   };
@@ -111,6 +113,7 @@ export default function UpdateWorkedHourDialog({
               workedAt: new Date(workedHour.workedAt),
               newEnrollmentsCount: workedHour.newEnrollmentsCount,
               status: workedHour.status,
+              priceSnapshot: workedHour.priceSnapshot,
             }}
             onDelete={() => setIsDeleteDialogOpen(true)}
             isDeleting={deleteMutation.isPending}

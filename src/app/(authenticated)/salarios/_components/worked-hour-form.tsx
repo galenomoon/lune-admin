@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -39,6 +39,7 @@ const workedHourSchema = z.object({
   workedAt: z.date(),
   newEnrollmentsCount: z.number().min(0, "Deve ser maior ou igual a 0"),
   status: z.enum(["PENDING", "DONE", "CANCELED"]).optional(),
+  priceSnapshot: z.number().min(0, "Deve ser maior ou igual a 0").optional(),
 });
 
 type WorkedHourFormData = z.infer<typeof workedHourSchema>;
@@ -73,6 +74,14 @@ export default function WorkedHourForm({
       status: "DONE",
     },
   });
+
+  // Resetar o formulário quando defaultValues mudar
+  useEffect(() => {
+    if (defaultValues) {
+      form.reset(defaultValues);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues]);
 
   // Buscar professores
   const { data: teachers, isLoading: isLoadingTeachers } = useQuery({
@@ -420,6 +429,33 @@ export default function WorkedHourForm({
                     <SelectItem value="CANCELED">Não Realizada</SelectItem>
                   </SelectContent>
                 </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        {/* Preço por Hora - Apenas no modo de edição */}
+        {isEditing && (
+          <FormField
+            control={form.control}
+            name="priceSnapshot"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Preço por Hora (R$)</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    min="0" 
+                    step="0.01"
+                    placeholder="Ex: 50.00"
+                    {...field} 
+                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} 
+                  />
+                </FormControl>
+                <p className="text-xs text-muted-foreground">
+                  Este valor só deve ser alterado se o preço original estiver incorreto
+                </p>
                 <FormMessage />
               </FormItem>
             )}
