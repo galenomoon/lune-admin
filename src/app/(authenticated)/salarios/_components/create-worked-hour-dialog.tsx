@@ -1,13 +1,11 @@
 "use client";
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import WorkedHourForm from "./worked-hour-form";
 import api from "@/config/api";
@@ -19,6 +17,23 @@ interface CreateWorkedHourDialogProps {
   selectedYear: number;
 }
 
+interface WorkedHourFormData {
+  teacherId: string;
+  modalityId: string;
+  classId: string;
+  workedAt: Date;
+  newEnrollmentsCount: number;
+  status?: "PENDING" | "DONE" | "CANCELED";
+}
+
+interface CreateWorkedHourApiData {
+  teacherId: string;
+  classId: string;
+  workedAt: string;
+  newEnrollmentsCount: number;
+  status?: "PENDING" | "DONE" | "CANCELED";
+}
+
 export default function CreateWorkedHourDialog({
   isOpen,
   onClose,
@@ -28,22 +43,33 @@ export default function CreateWorkedHourDialog({
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: CreateWorkedHourApiData) => {
       const response = await api.post("/api/v1/worked-hours", data);
       return response.data;
     },
     onSuccess: () => {
       toast.success("Registro criado com sucesso!");
-      queryClient.invalidateQueries({ queryKey: ["worked-hours", selectedMonth, selectedYear] });
+      queryClient.invalidateQueries({
+        queryKey: ["worked-hours", selectedMonth, selectedYear],
+      });
       onClose();
     },
-    onError: (error: any) => {
+    onError: (
+      error: Error & { response?: { data?: { message?: string } } }
+    ) => {
       toast.error(error?.response?.data?.message || "Erro ao criar registro");
     },
   });
 
-  const handleSubmit = (data: any) => {
-    createMutation.mutate(data);
+  const handleSubmit = (data: WorkedHourFormData) => {
+    const apiData: CreateWorkedHourApiData = {
+      teacherId: data.teacherId,
+      classId: data.classId,
+      workedAt: data.workedAt.toISOString(),
+      newEnrollmentsCount: data.newEnrollmentsCount,
+      status: data.status || "DONE",
+    };
+    createMutation.mutate(apiData);
   };
 
   return (
@@ -61,5 +87,3 @@ export default function CreateWorkedHourDialog({
     </Dialog>
   );
 }
-
-

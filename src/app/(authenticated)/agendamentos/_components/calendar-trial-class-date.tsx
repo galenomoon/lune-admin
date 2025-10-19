@@ -8,11 +8,6 @@ const getEventsForDate = (events: TrialStudent[], date: Date) => {
   return events.filter((event) => isSameDay(new Date(event.date), date));
 };
 
-const formatTime = (timeString: string) => {
-  if (!timeString) return "";
-  return timeString.substring(0, 5);
-};
-
 export default function CalendarTrialClassDate({
   day,
   currentMonth,

@@ -11,9 +11,19 @@ export const getWorkedHours = async (
   return data;
 };
 
+export interface UpdateWorkedHourData {
+  workedAt?: string;
+  startedAt?: string;
+  endedAt?: string;
+  duration?: number;
+  teacherId?: string;
+  priceSnapshot?: number;
+  status?: "PENDING" | "DONE" | "CANCELED";
+}
+
 export const updateWorkedHour = async (
   id: string,
-  updateData: any
+  updateData: UpdateWorkedHourData
 ): Promise<void> => {
   await api.patch(`/api/v1/worked-hours/${id}`, updateData);
 };
