@@ -47,15 +47,14 @@ export function UpdateTrialStudentDialog({
       },
       modalityId: trialStudent?.gridItem?.class?.modalityId || "",
       classId: trialStudent?.gridItem?.class?.id || "",
-      date: trialStudent?.date || "",
+      dates: trialStudent?.date ? [trialStudent.date] : [],
     },
   });
 
   const { mutate: updateTrialStudentMutation, isPending } = useMutation({
     mutationKey: ["updateTrialStudent", trialStudent?.id],
     mutationFn: async (data: TrialStudentSchema) => {
-      // Transformar os dados do novo schema para o formato esperado pela API
-      // Baseado no payload do TrialClassForm do lune-web
+      // Para update, usamos apenas a primeira data (não permitimos múltiplas datas na edição)
       const transformedData = {
         lead: {
           firstName: data.lead.firstName,
@@ -76,8 +75,8 @@ export function UpdateTrialStudentDialog({
           },
         },
         date: (() => {
-          const date = new Date(data.date);
-          date.setHours(date.getHours() + 3); // Ajuste de timezone como no TrialClassForm
+          const date = new Date(data.dates[0]); // Usar a primeira data do array
+          date.setHours(date.getHours() + 3); // Ajuste de timezone
           return date.toISOString();
         })(),
       };
@@ -136,7 +135,7 @@ export function UpdateTrialStudentDialog({
             },
             modalityId: trialStudent?.gridItem?.class?.modalityId || "",
             classId: trialStudent?.gridItem?.class?.id || "",
-            date: trialStudent?.date || "",
+            dates: trialStudent?.date ? [trialStudent.date] : [],
           });
         }
       }}

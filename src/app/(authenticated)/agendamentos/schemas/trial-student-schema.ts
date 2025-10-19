@@ -15,7 +15,7 @@ export const trialStudentSchema = z.object({
   }),
   modalityId: z.string().min(1, "Modalidade é obrigatória"),
   classId: z.string().min(1, "Turma é obrigatória"),
-  date: z.string().min(1, "Data é obrigatória"),
+  dates: z.array(z.string()).min(1, "Selecione pelo menos uma data"),
 });
 
 export type TrialStudentSchema = z.infer<typeof trialStudentSchema>;

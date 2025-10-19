@@ -4,12 +4,14 @@ import {
   GraduationCap,
   LayoutDashboard,
   Grid2X2,
-  DollarSign,
   List,
   UserStar,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
   ChartBar,
+  LayoutList,
+  HandCoins,
+  BanknoteArrowDown,
 } from "lucide-react";
 
 import {
@@ -31,6 +33,7 @@ import logoHeader from "@/assets/header-logo.svg";
 import logoIcon from "@/assets/header-logo-icon.svg";
 import { useQuery } from "@tanstack/react-query";
 import { getPendingTrialStudents } from "@/api/trial-student";
+import { getPendingWorkedHours } from "@/api/worked-hours";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -41,9 +44,14 @@ export function Sidebar() {
     queryFn: getPendingTrialStudents,
   });
 
+  const { data: pendingWorkedHoursData } = useQuery({
+    queryKey: ["pending-worked-hours"],
+    queryFn: getPendingWorkedHours,
+  });
+
   const sidebarGroups = [
     {
-      label: "Principal",
+      label: "Visão Geral",
       items: [
         {
           title: "Dashboard",
@@ -53,13 +61,28 @@ export function Sidebar() {
       ],
     },
     {
-      label: "Gestão",
+      label: "Acadêmico",
       items: [
         {
-          title: "Grade",
+          title: "Grade de Aulas",
           url: "/grade",
           icon: Grid2X2,
         },
+        {
+          title: "Modalidades",
+          url: "/modalidades",
+          icon: List,
+        },
+        {
+          title: "Professores",
+          url: "/professores",
+          icon: UserStar,
+        },
+      ],
+    },
+    {
+      label: "Agendamentos e Matrículas",
+      items: [
         {
           title: "Matrículas",
           url: "/matriculas",
@@ -79,45 +102,31 @@ export function Sidebar() {
         {
           title: "Planos",
           url: "/planos",
-          icon: DollarSign,
+          icon: LayoutList,
+        },
+        {
+          title: "Salários",
+          url: "/salarios",
+          icon: HandCoins,
+          pending: pendingWorkedHoursData?.count && pendingWorkedHoursData.count > 0,
+        },
+        {
+          title: "Despesas",
+          url: "/despesas",
+          icon: BanknoteArrowDown,
         },
       ],
     },
     {
-      label: "Informações",
-      items: [
-        {
-          title: "Professores",
-          url: "/professores",
-          icon: UserStar,
-        },
-
-        // {
-        //   title: "Turmas",
-        //   url: "/turmas",
-        //   icon: Users,
-        // },
-        {
-          title: "Modalidades",
-          url: "/modalidades",
-          icon: List,
-        },
-        // {
-        //   title: "Leads",
-        //   url: "/leads",
-        //   icon: Star,
-        //   isBlocked: true,
-        // },
-      ],
-    },
-    {
-      label: "Marketing",
+      label: "Análises e Marketing",
       items: [
         {
           title: "Tabela de Métricas",
           url: "/tabela-de-metricas",
           icon: ChartBar,
         },
+        // futuro:
+        // { title: "Leads", url: "/leads", icon: Star, isBlocked: true }
       ],
     },
   ];

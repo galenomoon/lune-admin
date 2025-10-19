@@ -32,14 +32,40 @@ export const columns: ColumnDef<StudentTable>[] = [
     },
   },
   {
-    accessorKey: "daysToExpire",
-    header: "Prazo para Expirar",
+    accessorKey: "plans",
+    header: "Planos",
     cell: ({ row }) => {
       return (
-        <span className="flex items-center gap-2 text-gray-500">
-          {row.original.daysToExpire && <Clock size={16} className="" />}
-          {row.original.daysToExpire}
-        </span>
+        <div className="flex flex-wrap gap-1">
+          {row.original.plans?.map((plan, index) => (
+            <Badge
+              key={index}
+              variant="outline"
+              className="border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-800 dark:bg-purple-950 dark:text-purple-300"
+            >
+              {plan}
+            </Badge>
+          ))}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "modalities",
+    header: "Modalidades",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-wrap gap-1">
+          {row.original.modalities?.map((modality, index) => (
+            <Badge
+              key={index}
+              variant="outline"
+              className="border-cyan-200 bg-cyan-50 text-cyan-700 dark:border-cyan-800 dark:bg-cyan-950 dark:text-cyan-300"
+            >
+              {modality}
+            </Badge>
+          ))}
+        </div>
       );
     },
   },
@@ -66,6 +92,18 @@ export const columns: ColumnDef<StudentTable>[] = [
         >
           {statusLabel[row.original.status]}
         </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "daysToExpire",
+    header: "Prazo para Expirar",
+    cell: ({ row }) => {
+      return (
+        <span className="flex items-center gap-2 text-gray-500">
+          {row.original.daysToExpire && <Clock size={16} className="" />}
+          {row.original.daysToExpire}
+        </span>
       );
     },
   },

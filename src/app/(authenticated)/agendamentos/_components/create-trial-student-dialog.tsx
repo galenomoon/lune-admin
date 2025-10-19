@@ -48,7 +48,7 @@ export function CreateTrialStudentDialog({
       },
       modalityId: "",
       classId: "",
-      date: selectedDate ? selectedDate.toISOString() : "",
+      dates: selectedDate ? [selectedDate.toISOString()] : [],
     },
     values: {
       lead: {
@@ -65,44 +65,53 @@ export function CreateTrialStudentDialog({
       },
       modalityId: "",
       classId: "",
-      date: selectedDate ? selectedDate.toISOString() : "",
+      dates: selectedDate ? [selectedDate.toISOString()] : [],
     },
   });
 
   const { mutate: createTrialStudentMutation, isPending } = useMutation({
     mutationKey: ["createTrialStudent"],
     mutationFn: async (data: TrialStudentSchema) => {
-      // Transformar os dados do schema para o formato esperado pela API
-      // Baseado no payload do TrialClassForm do lune-web
-      const transformedData = {
-        lead: {
-          firstName: data.lead.firstName,
-          lastName: data.lead.lastName,
-          phone: data.lead.phone,
-          instagram: data.lead.instagram,
-          modalityOfInterest: data.modalityId, // Adicionado baseado no TrialClassForm
-          preferencePeriod: data.gridItem.startTime, // Adicionado baseado no TrialClassForm
-        },
-        gridItem: {
-          id: data.gridItem.id,
-          dayOfWeek: data.gridItem.dayOfWeek,
-          startTime: data.gridItem.startTime,
-          endTime: data.gridItem.endTime,
-          class: {
-            id: data.classId,
-            modalityId: data.modalityId,
+      // Criar um agendamento para cada data selecionada
+      const promises = data.dates.map(async (dateStr) => {
+        const transformedData = {
+          lead: {
+            firstName: data.lead.firstName,
+            lastName: data.lead.lastName,
+            phone: data.lead.phone,
+            instagram: data.lead.instagram,
+            modalityOfInterest: data.modalityId,
+            preferencePeriod: data.gridItem.startTime,
           },
-        },
-        date: (() => {
-          const date = new Date(data.date);
-          date.setHours(date.getHours() + 3); // Ajuste de timezone como no TrialClassForm
-          return date.toISOString();
-        })(),
-      };
-      return await createTrialStudent(transformedData as unknown as TrialStudent);
+          gridItem: {
+            id: data.gridItem.id,
+            dayOfWeek: data.gridItem.dayOfWeek,
+            startTime: data.gridItem.startTime,
+            endTime: data.gridItem.endTime,
+            class: {
+              id: data.classId,
+              modalityId: data.modalityId,
+            },
+          },
+          date: (() => {
+            const date = new Date(dateStr);
+            date.setHours(date.getHours() + 3); // Ajuste de timezone
+            return date.toISOString();
+          })(),
+        };
+        return await createTrialStudent(transformedData as unknown as TrialStudent);
+      });
+
+      // Aguardar todas as criações
+      return await Promise.all(promises);
     },
-    onSuccess: () => {
-      toast.success("Aula experimental criada com sucesso");
+    onSuccess: (results) => {
+      const count = results.length;
+      toast.success(
+        count === 1 
+          ? "Aula experimental criada com sucesso" 
+          : `${count} aulas experimentais criadas com sucesso`
+      );
       queryClient.invalidateQueries({ queryKey: ["trial-students"] });
       onClose();
       trialStudentForm.reset();
@@ -133,7 +142,6 @@ export function CreateTrialStudentDialog({
           form={trialStudentForm}
           onSubmit={handleSubmit}
           isLoading={isPending}
-          selectedDate={selectedDate}
         />
       </DialogContent>
     </Dialog>

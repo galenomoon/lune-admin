@@ -9,6 +9,8 @@ export interface StudentTable {
   phone: string;
   status: "PENDING" | "PAID" | "CANCELED" | "OVERDUE" | "RENEW";
   student: Student;
+  plans: string[];
+  modalities: string[];
 }
 
 export interface Student {

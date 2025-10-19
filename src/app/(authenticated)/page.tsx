@@ -1,6 +1,7 @@
 "use client";
 import { ChartAreaInteractive } from "@/components/ui/chart-area-interactive";
 import { ChartPieModalities } from "@/components/ui/chart-pie-modalities";
+import { ChartBarModalities } from "@/components/ui/chart-bar-modalities";
 import { SectionCards, SectionCardData } from "@/components/ui/section-cards";
 import { DataTable } from "@/components/ui/data-table";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -98,8 +99,9 @@ export default function DashboardPage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
               <SectionCards data={sectionCardsData} />
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-3">
                 <ChartAreaInteractive chartData={dashboardStats?.chart} />
+                <ChartBarModalities data={dashboardStats?.modalities || []} />
                 <ChartPieModalities data={dashboardStats?.modalities || []} />
               </div>
               <PaymentTabProvider>

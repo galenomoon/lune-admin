@@ -4,7 +4,7 @@ import { UseFormReturn } from "react-hook-form";
 import { TrialStudentSchema } from "../schemas/trial-student-schema";
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import {
   FormField,
   FormItem,
@@ -22,16 +22,17 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { getEnrollmentFormData } from "@/api/student";
-import { 
-  GridClass, 
-  ClassFormData, 
-  ModalityFormData 
+import {
+  GridClass,
+  ClassFormData,
+  ModalityFormData
 } from "@/interfaces/enrollment";
+import { Badge } from "@/components/ui/badge";
 
 interface TrialStudentFormProps {
   form: UseFormReturn<TrialStudentSchema>;
@@ -39,7 +40,6 @@ interface TrialStudentFormProps {
   isLoading: boolean;
   onDelete?: () => void;
   onDeleteLoading?: boolean;
-  selectedDate?: Date;
 }
 
 export default function TrialStudentForm({
@@ -48,7 +48,6 @@ export default function TrialStudentForm({
   isLoading,
   onDelete,
   onDeleteLoading,
-  selectedDate,
 }: TrialStudentFormProps) {
   const { data: formData, isLoading: isFormDataLoading } = useQuery({
     queryKey: ["enrollment-form-data"],
@@ -107,7 +106,7 @@ export default function TrialStudentForm({
           {/* Dados da Aula */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Dados da Aula</h3>
-            
+
             {/* Modalidade e Turma */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Modalidade */}
@@ -121,7 +120,7 @@ export default function TrialStudentForm({
                       onValueChange={(value) => {
                         field.onChange(value);
                         form.setValue("classId", ""); // Limpar turma ao trocar modalidade
-                        form.setValue("date", ""); // Limpar data ao trocar modalidade
+                        form.setValue("dates", []); // Limpar datas ao trocar modalidade
                       }}
                       defaultValue={field.value}
                     >
@@ -155,7 +154,7 @@ export default function TrialStudentForm({
                     <Select
                       onValueChange={(value) => {
                         field.onChange(value);
-                        form.setValue("date", ""); // Limpar data ao trocar turma
+                        form.setValue("dates", []); // Limpar datas ao trocar turma
                         
                         // Preencher dados do gridItem baseado na turma selecionada
                         const selectedClass = formData?.classes?.find(
@@ -212,10 +211,10 @@ export default function TrialStudentForm({
               />
             </div>
 
-            {/* Data */}
+            {/* Datas */}
             <FormField
               control={form.control}
-              name="date"
+              name="dates"
               render={({ field }) => {
                 const selectedClass = formData?.classes?.find(
                   (classe: ClassFormData) => classe.id === selectedClassId
@@ -242,9 +241,20 @@ export default function TrialStudentForm({
                   );
                 };
 
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const minDate = addDays(today, -7); // 7 dias no passado
+
+                const selectedDates = (field.value || []).map((dateStr: string) => new Date(dateStr));
+
+                const removeDate = (dateToRemove: string) => {
+                  const currentDates = field.value || [];
+                  field.onChange(currentDates.filter((d: string) => d !== dateToRemove));
+                };
+
                 return (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Data da Aula</FormLabel>
+                    <FormLabel>Datas das Aulas</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -252,46 +262,59 @@ export default function TrialStudentForm({
                             variant="outline"
                             className={cn(
                               "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              (!field.value || field.value.length === 0) && "text-muted-foreground"
                             )}
                             disabled={!selectedClassId}
                           >
-                            {field.value ? (
-                              format(new Date(field.value), "dd/MM/yyyy", {
-                                locale: ptBR,
-                              })
-                            ) : (
-                              <span>
-                                {selectedClassId
-                                  ? "Selecione a data"
-                                  : "Selecione uma turma primeiro"}
-                              </span>
-                            )}
+                            <span>
+                              {selectedClassId
+                                ? field.value && field.value.length > 0
+                                  ? `${field.value.length} data(s) selecionada(s)`
+                                  : "Selecione uma ou mais datas"
+                                : "Selecione uma turma primeiro"}
+                            </span>
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
-                          mode="single"
-                          selected={
-                            field.value ? new Date(field.value) : selectedDate
-                          }
-                          onSelect={(date) =>
-                            field.onChange(date?.toISOString())
-                          }
-                          disabled={(date) =>
-                            date < new Date() || !isDateValid(date)
-                          }
+                          mode="multiple"
+                          selected={selectedDates}
+                          onSelect={(dates) => {
+                            if (dates) {
+                              field.onChange(Array.from(dates).map((d) => d.toISOString()));
+                            }
+                          }}
+                          disabled={(date) => {
+                            const dateOnly = new Date(date);
+                            dateOnly.setHours(0, 0, 0, 0);
+                            return dateOnly < minDate || !isDateValid(date);
+                          }}
                           initialFocus
                         />
                       </PopoverContent>
                     </Popover>
+
+                    {/* Mostrar datas selecionadas como badges */}
+                    {field.value && field.value.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {field.value.map((dateStr: string) => (
+                          <Badge key={dateStr} variant="secondary" className="flex items-center gap-1">
+                            {format(new Date(dateStr), "dd/MM/yyyy", { locale: ptBR })}
+                            <X
+                              className="h-3 w-3 cursor-pointer hover:text-destructive"
+                              onClick={() => removeDate(dateStr)}
+                            />
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+
                     <FormMessage />
                     {selectedClassId && (
                       <p className="text-xs text-muted-foreground">
-                        Apenas datas com aulas da turma selecionada estão
-                        disponíveis
+                        Selecione uma ou mais datas (até 7 dias no passado e qualquer data no futuro). Apenas datas com aulas da turma selecionada estão disponíveis.
                       </p>
                     )}
                   </FormItem>
