@@ -50,3 +50,18 @@ export interface WorkedHoursResponse {
   workedHours: WorkedHour[];
 }
 
+export interface TeacherSalary {
+  teacherId: string;
+  teacherName: string;
+  totalClasses: number;
+  newEnrollments: number;
+  priceHour: number;
+  totalToPay: number;
+  modalities: string[];
+  pixKey: string | null;
+}
+
+export interface TeacherSalaryResponse {
+  teachers: TeacherSalary[];
+}
+
