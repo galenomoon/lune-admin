@@ -10,10 +10,24 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { WorkedHour } from "@/interfaces/worked-hours";
-import { Clock, User2, Star, UserPlus, Calendar, ListCollapse, UserCircle, DollarSign, CheckCircle } from "lucide-react";
+import { Clock, User2, Star, UserPlus, Calendar, ListCollapse, UserCircle, DollarSign, CheckCircle, Edit, Trash2, Check, MoreVertical } from "lucide-react";
 import { dateToString } from "@/utils/parse-date";
 import StudentsModal from "./students-modal";
+import { deleteWorkedHour, updateWorkedHour } from "@/api/worked-hours";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface WorkedHoursTableProps {
   workedHours: WorkedHour[];
@@ -50,10 +64,56 @@ export default function WorkedHoursTable({
 }: WorkedHoursTableProps) {
   const [isStudentsModalOpen, setIsStudentsModalOpen] = useState(false);
   const [selectedWorkedHour, setSelectedWorkedHour] = useState<WorkedHour | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [workedHourToDelete, setWorkedHourToDelete] = useState<WorkedHour | null>(null);
+
+  const queryClient = useQueryClient();
 
   const handleOpenStudentsModal = (workedHour: WorkedHour) => {
     setSelectedWorkedHour(workedHour);
     setIsStudentsModalOpen(true);
+  };
+
+  // Mutation para deletar
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteWorkedHour(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["worked-hours"] });
+      toast.success("Registro deletado com sucesso!");
+      setIsDeleteDialogOpen(false);
+      setWorkedHourToDelete(null);
+    },
+    onError: () => {
+      toast.error("Erro ao deletar registro");
+    },
+  });
+
+  // Mutation para confirmar (mudar status para DONE)
+  const confirmMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: "DONE" }) =>
+      updateWorkedHour(id, { status }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["worked-hours"] });
+      toast.success("Registro confirmado com sucesso!");
+    },
+    onError: () => {
+      toast.error("Erro ao confirmar registro");
+    },
+  });
+
+  const handleDeleteClick = (workedHour: WorkedHour) => {
+    setWorkedHourToDelete(workedHour);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (workedHourToDelete) {
+      deleteMutation.mutate(workedHourToDelete.id);
+    }
+  };
+
+  const handleConfirmStatus = (workedHour: WorkedHour) => {
+    confirmMutation.mutate({ id: workedHour.id, status: "DONE" });
   };
 
   const formatTime = (time: string) => {
@@ -127,18 +187,24 @@ export default function WorkedHoursTable({
                     Valor
                   </div>
                 </TableHead>
+                <TableHead className="text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <MoreVertical className="h-4 w-4" />
+                    Ações
+                  </div>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center py-8">
                     Carregando registros...
                   </TableCell>
                 </TableRow>
               ) : workedHours.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center py-8">
                     <div className="text-gray-500">
                       <p className="text-lg font-medium">
                         Nenhum registro encontrado
@@ -157,8 +223,7 @@ export default function WorkedHoursTable({
                   return (
                     <TableRow
                       key={workedHour.id}
-                      className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => onEdit(workedHour)}
+                      className="hover:bg-muted/50"
                     >
                       <TableCell>
                         <div className="flex flex-col">
@@ -194,7 +259,10 @@ export default function WorkedHoursTable({
                           <Badge
                             variant="outline"
                             className="cursor-pointer hover:opacity-80 transition-opacity"
-                            onClick={() => handleOpenStudentsModal(workedHour)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenStudentsModal(workedHour);
+                            }}
                           >
                             <User2 className="w-3 h-3 mr-1" />
                             {workedHour.enrolledStudentsCount}
@@ -242,6 +310,51 @@ export default function WorkedHoursTable({
                           minimumFractionDigits: 2,
                         })}
                       </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          {/* Botão de Confirmar - apenas se status for PENDING */}
+                          {workedHour.status === "PENDING" && (
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleConfirmStatus(workedHour);
+                              }}
+                              disabled={confirmMutation.isPending}
+                              className="border-green-500 text-green-500 bg-green-50"
+                            >
+                              <Check className="w-4 h-4" />
+                            </Button>
+                          )}
+                          
+                          {/* Botão de Editar */}
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEdit(workedHour);
+                            }}
+                            className="border-blue-500 text-blue-500 bg-blue-50"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          
+                          {/* Botão de Deletar */}
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(workedHour);
+                            }}
+                            className="border-red-500 text-red-500 bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   );
                 })
@@ -260,6 +373,41 @@ export default function WorkedHoursTable({
           title={`Alunos - ${selectedWorkedHour.modalityName} • ${dateToString(selectedWorkedHour.workedAt)}`}
         />
       )}
+
+      {/* Alert Dialog de Confirmação de Deleção */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja deletar este registro de horas trabalhadas?
+              {workedHourToDelete && (
+                <div className="mt-2 p-3 bg-muted rounded-md">
+                  <p className="font-medium">
+                    {workedHourToDelete.teacherName} - {workedHourToDelete.modalityName}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {dateToString(workedHourToDelete.workedAt)}
+                  </p>
+                </div>
+              )}
+              <p className="mt-2 text-destructive font-medium">
+                Esta ação não pode ser desfeita.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? "Deletando..." : "Deletar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
