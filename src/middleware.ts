@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 enum RoutesEnum {
   AUTH_LOGIN = "/login",
+  SUBSCRIPTION = "/assinar-matricula",
   DASHBOARD = "/",
 }
 
@@ -11,7 +12,7 @@ export default function AuthMiddleware(request: NextRequest): NextResponse {
   const redirectPath = request.nextUrl.searchParams.get("redirect");
 
   // Se não tem token e não está na página de login, redireciona para login
-  if (!token && pathname !== RoutesEnum.AUTH_LOGIN) {
+  if (!token && pathname !== RoutesEnum.AUTH_LOGIN && pathname !== RoutesEnum.SUBSCRIPTION) {
     const loginUrl = new URL(RoutesEnum.AUTH_LOGIN, request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
