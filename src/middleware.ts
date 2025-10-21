@@ -11,8 +11,9 @@ export default function AuthMiddleware(request: NextRequest): NextResponse {
   const token = request.cookies.get("token")?.value;
   const redirectPath = request.nextUrl.searchParams.get("redirect");
 
+ const isSubscriptionRoute = pathname.includes(RoutesEnum.SUBSCRIPTION);
   // Se não tem token e não está na página de login, redireciona para login
-  if (!token && pathname !== RoutesEnum.AUTH_LOGIN && pathname !== RoutesEnum.SUBSCRIPTION) {
+  if (!token && pathname !== RoutesEnum.AUTH_LOGIN && !isSubscriptionRoute) {
     const loginUrl = new URL(RoutesEnum.AUTH_LOGIN, request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);

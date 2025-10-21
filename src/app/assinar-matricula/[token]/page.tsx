@@ -42,7 +42,7 @@ export default function SignaturePage() {
           <h1 className="text-3xl font-bold mt-4">Assinar Matrícula</h1>
           <p className="text-muted-foreground">
             {enrollment?.student
-              ? `Olá ${enrollment.student.firstName} ${enrollment.student.lastName}, finalize sua matrícula assinando o contrato abaixo.`
+              ? `Olá ${enrollment?.student?.firstName} ${enrollment?.student?.lastName}, finalize sua matrícula assinando o contrato abaixo.`
               : "Finalize sua matrícula assinando o contrato abaixo."}
           </p>
         </div>
@@ -51,9 +51,9 @@ export default function SignaturePage() {
         <SignatureForm
           onSignatureChange={setSignature}
           onSendSignature={handleSendSignature}
-          isLoading={sendSignatureMutation.isPending}
+          isLoading={sendSignatureMutation?.isPending}
           hasError={!!enrollmentError}
-          hasSent={sendSignatureMutation.isSuccess || !!enrollment?.signature}
+          hasSent={sendSignatureMutation?.isSuccess || !!enrollment?.signature}
         />
       </div>
     </div>
