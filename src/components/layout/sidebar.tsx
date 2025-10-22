@@ -32,21 +32,16 @@ import Image from "next/image";
 import logoHeader from "@/assets/header-logo.svg";
 import logoIcon from "@/assets/header-logo-icon.svg";
 import { useQuery } from "@tanstack/react-query";
-import { getPendingTrialStudents } from "@/api/trial-student";
-import { getPendingWorkedHours } from "@/api/worked-hours";
+import { getPendingNotifications } from "@/api/notifications";
 
 export function Sidebar() {
   const pathname = usePathname();
   const { toggleSidebar, open } = useSidebar();
 
-  const { data: pendingData } = useQuery({
-    queryKey: ["pending-trial-students"],
-    queryFn: getPendingTrialStudents,
-  });
-
-  const { data: pendingWorkedHoursData } = useQuery({
-    queryKey: ["pending-worked-hours"],
-    queryFn: getPendingWorkedHours,
+  const { data: pendingNotifications } = useQuery({
+    queryKey: ["pending-notifications"],
+    queryFn: getPendingNotifications,
+    refetchInterval: 30000, // Atualiza a cada 30 segundos
   });
 
   const sidebarGroups = [
@@ -91,7 +86,7 @@ export function Sidebar() {
         {
           title: "Aulas Avulsas",
           url: "/agendamentos",
-          pending: pendingData?.count && pendingData.count > 0,
+          pending: pendingNotifications?.trialStudents && pendingNotifications.trialStudents > 0,
           icon: Calendar,
         },
       ],
@@ -108,12 +103,13 @@ export function Sidebar() {
           title: "Salários",
           url: "/salarios",
           icon: HandCoins,
-          pending: pendingWorkedHoursData?.count && pendingWorkedHoursData.count > 0,
+          pending: pendingNotifications?.workedHours && pendingNotifications.workedHours > 0,
         },
         {
           title: "Despesas",
           url: "/despesas",
           icon: BanknoteArrowDown,
+          pending: pendingNotifications?.expenses && pendingNotifications.expenses > 0,
         },
       ],
     },

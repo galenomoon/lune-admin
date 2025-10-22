@@ -25,6 +25,8 @@ export interface WorkedHour {
 export interface WorkedHoursCards {
   totalToPay: {
     value: number;
+    fromHours: number;
+    fromEnrollments: number;
     trend: {
       value: number;
       isPositive: boolean;
@@ -54,6 +56,7 @@ export interface TeacherSalary {
   teacherId: string;
   teacherName: string;
   totalClasses: number;
+  totalHours: number;
   newEnrollments: number;
   priceHour: number;
   totalToPay: number;

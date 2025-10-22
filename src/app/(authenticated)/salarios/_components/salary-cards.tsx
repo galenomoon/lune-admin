@@ -20,19 +20,10 @@ export default function SalaryCards({ cards }: SalaryCardsProps) {
           <div className="text-2xl font-bold">
             R$ {cards.totalToPay.value.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
           </div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-            {cards.totalToPay.trend.isPositive ? (
-              <span className="flex items-center text-green-600">
-                <ArrowDown className="h-3 w-3 mr-1" />
-                {cards.totalToPay.trend.value.toFixed(1)}%
-              </span>
-            ) : (
-              <span className="flex items-center text-red-600">
-                <ArrowUp className="h-3 w-3 mr-1" />
-                {cards.totalToPay.trend.value.toFixed(1)}%
-              </span>
-            )}
-            <span>em relação ao mês anterior</span>
+          <div className="text-xs text-muted-foreground mt-1">
+            Horas: R$ {cards.totalToPay.fromHours.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+            <br />
+            Comissões: R$ {cards.totalToPay.fromEnrollments.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
           </div>
         </CardContent>
       </Card>

@@ -34,11 +34,38 @@ export default function DashboardPage() {
           )}`,
           trend: dashboardStats.cards.totalRevenue.trend,
           footer: {
-            primary: dashboardStats.cards.totalRevenue.trend.isPositive
-              ? "Crescimento este mês"
-              : "Queda este mês",
-            secondary: `Comparado ao mês anterior`,
+            primary: `Matrículas: R$ ${dashboardStats.cards.totalRevenue.fromEnrollments.toLocaleString(
+              "pt-BR",
+              { minimumFractionDigits: 2 }
+            )}`,
+            secondary: `Aulas Avulsas: R$ ${dashboardStats.cards.totalRevenue.fromTrialClasses.toLocaleString(
+              "pt-BR",
+              { minimumFractionDigits: 2 }
+            )}`,
           },
+        },
+        {
+          id: "profit",
+          title: "Lucro",
+          description: "Lucro",
+          value: `${dashboardStats.cards.profit.value < 0 ? "🚨 " : "🥳 "}R$ ${Math.abs(
+            dashboardStats.cards.profit.value
+          ).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`,
+          trend: dashboardStats.cards.profit.trend,
+          footer: {
+            primary: `Este mês`,
+            secondary: `Despesas: R$ ${dashboardStats.cards.profit.expensesCosts.toLocaleString(
+              "pt-BR",
+              { minimumFractionDigits: 2 }
+            )}`,
+            tertiary: `Professores: R$ ${dashboardStats.cards.profit.teacherCosts?.toLocaleString(
+              "pt-BR",
+              { minimumFractionDigits: 2 }
+            )}`
+          },
+          customValueStyle: dashboardStats.cards.profit.value < 0 
+            ? { color: "#dc2626" } 
+            : { color: "#16a34a" },
         },
         {
           id: "toReceive",
@@ -50,8 +77,14 @@ export default function DashboardPage() {
           )}`,
           trend: dashboardStats.cards.totalToReceive.trend,
           footer: {
-            primary: "Valores pendentes",
-            secondary: "Pagamentos não realizados",
+            primary: `Matrículas: R$ ${dashboardStats.cards.totalToReceive.fromEnrollments.toLocaleString(
+              "pt-BR",
+              { minimumFractionDigits: 2 }
+            )}`,
+            secondary: `Aulas Avulsas: R$ ${dashboardStats.cards.totalToReceive.fromTrialClasses.toLocaleString(
+              "pt-BR",
+              { minimumFractionDigits: 2 }
+            )}`,
           },
         },
         {
@@ -72,8 +105,8 @@ export default function DashboardPage() {
           value: dashboardStats.cards.trialClasses.value.toString(),
           trend: dashboardStats.cards.trialClasses.trend,
           footer: {
-            primary: "Aulas experimentais",
-            secondary: `Este mês`,
+            primary: `${dashboardStats.cards.trialClasses.completed} realizadas`,
+            secondary: `${dashboardStats.cards.trialClasses.scheduled} agendadas`,
           },
         },
       ]

@@ -96,7 +96,7 @@ export default function TeacherForm({
               placeholder="Digite o valor hora"
               mask="R$ 99,99"
               maskOptions={{
-                placeholder: "R$ __. __",
+                placeholder: "R$ 00,00",
                 showMaskOnHover: true,
               }}
             />

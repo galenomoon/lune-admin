@@ -43,7 +43,13 @@ export default function TeacherSalaryTable({
               <TableHead>
                 <div className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4" />
-                  Aulas Avulsas
+                  Aulas Dadas
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
+                  <BookOpen className="h-4 w-4" />
+                  Total de Horas
                 </div>
               </TableHead>
               <TableHead>
@@ -81,13 +87,13 @@ export default function TeacherSalaryTable({
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8">
+                <TableCell colSpan={8} className="text-center py-8">
                   Carregando dados...
                 </TableCell>
               </TableRow>
             ) : teachers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8">
+                <TableCell colSpan={8} className="text-center py-8">
                   <div className="text-gray-500">
                     <p className="text-lg font-medium">
                       Nenhum registro encontrado
@@ -112,6 +118,11 @@ export default function TeacherSalaryTable({
                       <BookOpen className="w-3 h-3 mr-1" />
                       {teacher.totalClasses}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-medium">
+                      {teacher?.totalHours?.toFixed(2) || 0}h
+                    </span>
                   </TableCell>
                   <TableCell>
                     <Badge

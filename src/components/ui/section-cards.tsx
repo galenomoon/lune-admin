@@ -1,6 +1,7 @@
-import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
+import * as React from "react";
+import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react";
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardAction,
@@ -8,26 +9,28 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 
 export interface SectionCardData {
-  id: string
-  title: string
-  description: string
-  value: string | number
+  id: string;
+  title: string;
+  description: string;
+  value: string | number;
   trend: {
-    value: number
-    isPositive: boolean
-  }
+    value: number;
+    isPositive: boolean;
+  };
   footer: {
-    primary: string
-    secondary: string
-  }
+    primary: string;
+    secondary: string;
+    tertiary?: string;
+  };
+  customValueStyle?: React.CSSProperties;
 }
 
 interface SectionCardsProps {
-  data: SectionCardData[]
-  className?: string
+  data: SectionCardData[];
+  className?: string;
 }
 
 export function SectionCards({ data = [], className }: SectionCardsProps) {
@@ -36,25 +39,37 @@ export function SectionCards({ data = [], className }: SectionCardsProps) {
       <IconTrendingUp className="size-4" />
     ) : (
       <IconTrendingDown className="size-4" />
-    )
-  }
+    );
+  };
 
   const formatTrendValue = (value: number, isPositive: boolean) => {
-    return value > 0 ? `${isPositive ? '+' : '-'}${(value).toFixed(2)}%` : `${(value).toFixed(2)}%`
-  }
+    return value > 0
+      ? `${isPositive ? "+" : "-"}${value.toFixed(2)}%`
+      : `${value.toFixed(2)}%`;
+  };
 
   return (
-    <div className={`*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4  *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs  @xl/main:grid-cols-2 @5xl/main:grid-cols-4 ${className || ''}`}>
+    <div
+      className={`*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4  *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs  @xl/main:grid-cols-2 @5xl/main:grid-cols-5 ${
+        className || ""
+      }`}
+    >
       {data.map((card) => (
         <Card key={card.id} className="@container/card">
           <CardHeader>
             <CardDescription>{card.description}</CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-2xl whitespace-nowrap">
+            <CardTitle
+              className="text-2xl font-semibold tabular-nums @[250px]/card:text-2xl whitespace-nowrap"
+              style={card.customValueStyle}
+            >
               {card.value}
             </CardTitle>
             <CardAction>
-              <Badge variant="outline"
-              className={`${card.trend.isPositive ? 'text-green-500' : 'text-red-500'}`}
+              <Badge
+                variant="outline"
+                className={`${
+                  card.trend.isPositive ? "text-green-500" : "text-red-500"
+                }`}
               >
                 <TrendIcon isPositive={card.trend.isPositive} />
                 {formatTrendValue(card.trend.value, card.trend.isPositive)}
@@ -63,14 +78,20 @@ export function SectionCards({ data = [], className }: SectionCardsProps) {
           </CardHeader>
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
             <div className="line-clamp-1 flex gap-2 font-medium">
-              {card.footer.primary} <TrendIcon isPositive={card.trend.isPositive} />
+              {card.footer.primary}{" "}
+              <TrendIcon isPositive={card.trend.isPositive} />
             </div>
-            <div className="text-muted-foreground">
-              {card.footer.secondary}
-            </div>
+            <section className="flex flex-col gap-0">
+              <div className="text-muted-foreground">
+                {card.footer.secondary}
+              </div>
+              <div className="text-muted-foreground">
+                {card?.footer?.tertiary}
+              </div>
+            </section>
           </CardFooter>
         </Card>
       ))}
     </div>
-  )
+  );
 }
