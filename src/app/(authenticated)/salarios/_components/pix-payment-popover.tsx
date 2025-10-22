@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle, Copy, Check, QrCode } from "lucide-react";
 import { toast } from "sonner";
-import { phoneNumberFormatter } from "@/utils/parse-phone";
 
 interface PixPaymentPopoverProps {
   teacherName: string;
