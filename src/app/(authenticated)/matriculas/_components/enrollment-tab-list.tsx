@@ -14,6 +14,7 @@ import {
   RefreshCcw,
   File,
   Link,
+  Plus,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -55,17 +56,16 @@ const EnrollmentTabList = ({
     openEditEnrollmentForm,
     cancelEnrollmentMutation,
     openRenewEnrollmentForm,
+    openAddEnrollmentForm,
   } = useEnrollmentTab();
 
   const generateLinkMutation = useMutation({
     mutationKey: ["generate-signature-link"],
     mutationFn: (enrollment: EnrollmentWithDetails) => {
-      console.log(enrollment);
       if (!enrollment?.id) throw new Error("Enrollment ID not found");
       return generateSignatureLink(enrollment.id);
     },
     onSuccess: (data) => {
-      console.log(data);
       copyLink(data.link);
     },
     onError: () => {
@@ -286,7 +286,9 @@ const EnrollmentTabList = ({
                             Compartilhar Contrato
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => generateLinkMutation.mutate(enrollment)}
+                            onClick={() =>
+                              generateLinkMutation.mutate(enrollment)
+                            }
                             className=""
                           >
                             <Link className="h-4 w-4" />
@@ -369,6 +371,23 @@ const EnrollmentTabList = ({
                 </Card>
               );
             })}
+
+            <Card className="hover:shadow-md transition-shadow gap-2 py-4 px-5 cursor-pointer border-dashed border-2 hover:border-solid">
+              <CardContent className="flex items-center justify-center h-full min-h-[200px] p-0">
+                <Button
+                  variant="ghost"
+                  className="flex flex-col gap-2 h-full w-full"
+                  onClick={() =>
+                    studentData && openAddEnrollmentForm(studentData)
+                  }
+                >
+                  <Plus className="h-8 w-8 text-muted-foreground" />
+                  <span className="text-muted-foreground">
+                    Adicionar matrícula
+                  </span>
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         )}
       </div>

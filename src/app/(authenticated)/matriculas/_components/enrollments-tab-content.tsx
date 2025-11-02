@@ -4,6 +4,7 @@ import { EnrollmentTabEdit } from "./enrollment-tab-edit";
 import { EnrollmentTabList } from "./enrollment-tab-list";
 import { StudentDetails } from "@/interfaces/students";
 import { EnrollmentTabRenew } from "./enrollment-tab-renew";
+import { EnrollmentTabExtra } from "./enrollment-tab-extra";
 
 export const EnrollmentsTabContent = ({
   enrollments = [],
@@ -12,7 +13,8 @@ export const EnrollmentsTabContent = ({
   enrollments: EnrollmentWithDetails[];
   studentData: StudentDetails;
 }) => {
-  const { isEditingEnrollment, isRenewingEnrollment } = useEnrollmentTab();
+  const { isEditingEnrollment, isRenewingEnrollment, isAddingEnrollment } =
+    useEnrollmentTab();
 
   if (isEditingEnrollment) {
     return (
@@ -26,6 +28,14 @@ export const EnrollmentsTabContent = ({
     return (
       <section className="flex flex-col max-h-[500px] pb-8">
         <EnrollmentTabRenew />
+      </section>
+    );
+  }
+
+  if (isAddingEnrollment) {
+    return (
+      <section className="flex flex-col max-h-[500px] pb-8">
+        <EnrollmentTabExtra />
       </section>
     );
   }

@@ -163,4 +163,5 @@ export interface PlanFormData {
   id: string;
   price: number;
   name: string;
+  durationInDays?: number;
 }

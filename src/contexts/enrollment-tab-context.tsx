@@ -21,9 +21,12 @@ interface EnrollmentTabContextType {
     enrollment: EnrollmentWithDetails,
     studentData?: StudentDetails | null
   ) => void;
+  openAddEnrollmentForm: (studentData: StudentDetails) => void;
   closeRenewEnrollmentForm: () => void;
   closeEditEnrollmentForm: () => void;
+  closeAddEnrollmentForm: () => void;
   isRenewingEnrollment: boolean;
+  isAddingEnrollment: boolean;
   currentEnrollment: EnrollmentWithDetails | null;
   currentStudent: StudentDetails | null;
   cancelEnrollmentMutation: UseMutationResult<void, Error, string>;
@@ -38,9 +41,12 @@ export const EnrollmentTabContext = createContext<EnrollmentTabContextType>({
   isEditingEnrollment: false,
   openEditEnrollmentForm: () => {},
   openRenewEnrollmentForm: () => {},
+  openAddEnrollmentForm: () => {},
   closeEditEnrollmentForm: () => {},
   closeRenewEnrollmentForm: () => {},
+  closeAddEnrollmentForm: () => {},
   isRenewingEnrollment: false,
+  isAddingEnrollment: false,
   currentEnrollment: null,
   currentStudent: null,
   cancelEnrollmentMutation: {} as UseMutationResult<void, Error, string>,
@@ -63,6 +69,7 @@ export const EnrollmentTabProvider = ({
   );
   const [isEditingEnrollment, setIsEditingEnrollment] = useState(false);
   const [isRenewingEnrollment, setIsRenewingEnrollment] = useState(false);
+  const [isAddingEnrollment, setIsAddingEnrollment] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -124,7 +131,17 @@ export const EnrollmentTabProvider = ({
     setCurrentStudent(null);
   };
 
-  
+  // ================== ADD ENROLLMENT ==================
+
+  const openAddEnrollmentForm = (studentData: StudentDetails) => {
+    setCurrentStudent(studentData);
+    setIsAddingEnrollment(true);
+  };
+
+  const closeAddEnrollmentForm = () => {
+    setIsAddingEnrollment(false);
+    setCurrentStudent(null);
+  };
 
   return (
     <EnrollmentTabContext.Provider
@@ -134,7 +151,10 @@ export const EnrollmentTabProvider = ({
         closeEditEnrollmentForm,
         openRenewEnrollmentForm,
         closeRenewEnrollmentForm,
+        openAddEnrollmentForm,
+        closeAddEnrollmentForm,
         isRenewingEnrollment,
+        isAddingEnrollment,
         currentEnrollment,
         currentStudent,
         cancelEnrollmentMutation,
