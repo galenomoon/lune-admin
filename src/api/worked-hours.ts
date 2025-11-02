@@ -47,3 +47,8 @@ export const getPendingWorkedHours = async (): Promise<{ count: number }> => {
   return data;
 };
 
+export const createBatchWorkedHours = async (): Promise<{ count: number }> => {
+  const { data } = await api.get("/api/v1/worked-hours/cron/create-batch");
+  return data;
+};
+

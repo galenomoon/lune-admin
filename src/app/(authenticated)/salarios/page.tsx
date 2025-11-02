@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getWorkedHours, getWorkedHoursByTeacher } from "@/api/worked-hours";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getWorkedHours, getWorkedHoursByTeacher, createBatchWorkedHours } from "@/api/worked-hours";
 import MonthNavigation from "./_components/month-navigation";
 import SalaryCards from "./_components/salary-cards";
 import WorkedHoursTable from "./_components/worked-hours-table";
@@ -10,8 +10,9 @@ import CreateWorkedHourDialog from "./_components/create-worked-hour-dialog";
 import UpdateWorkedHourDialog from "./_components/update-worked-hour-dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, List, Users } from "lucide-react";
+import { Plus, List, Users, RefreshCw } from "lucide-react";
 import { WorkedHour } from "@/interfaces/worked-hours";
+import { toast } from "sonner";
 
 export default function SalariosPage() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
@@ -19,6 +20,9 @@ export default function SalariosPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingWorkedHour, setEditingWorkedHour] = useState<WorkedHour | null>(null);
   const [activeTab, setActiveTab] = useState("geral");
+  const [isCreatingBatch, setIsCreatingBatch] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const { data: workedHoursData, isLoading } = useQuery({
     queryKey: ["worked-hours", selectedMonth, selectedYear],
@@ -29,6 +33,28 @@ export default function SalariosPage() {
     queryKey: ["worked-hours-by-teacher", selectedMonth, selectedYear],
     queryFn: () => getWorkedHoursByTeacher(selectedMonth, selectedYear),
   });
+
+  const handleCreateBatch = async () => {
+    setIsCreatingBatch(true);
+    try {
+      const result = await createBatchWorkedHours();
+      
+      // Atualizar queries para refletir os novos dados
+      await queryClient.invalidateQueries({
+        queryKey: ["worked-hours", selectedMonth, selectedYear],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["worked-hours-by-teacher", selectedMonth, selectedYear],
+      });
+      
+      toast.success(`Registros criados com sucesso! Total: ${result.count} aulas.`);
+    } catch (error) {
+      console.error("Erro ao criar batch:", error);
+      toast.error("Erro ao criar registros de aulas. Tente novamente.");
+    } finally {
+      setIsCreatingBatch(false);
+    }
+  };
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -48,10 +74,21 @@ export default function SalariosPage() {
             onYearChange={setSelectedYear}
           />
           {activeTab === "geral" && (
-            <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Adicionar Registro
-            </Button>
+            <>
+              <Button
+                onClick={handleCreateBatch}
+                disabled={isCreatingBatch}
+                variant="outline"
+                size="icon"
+                title="Criar registros de aulas do dia"
+              >
+                <RefreshCw className={`h-4 w-4 ${isCreatingBatch ? "animate-spin" : ""}`} />
+              </Button>
+              <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
+                <Plus className="h-4 w-4" />
+                Adicionar Registro
+              </Button>
+            </>
           )}
         </div>
       </section>

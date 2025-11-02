@@ -60,6 +60,9 @@ export interface TeacherSalary {
   newEnrollments: number;
   priceHour: number;
   totalToPay: number;
+  totalRevenue: number;
+  revenueFromEnrollments: number;
+  revenueFromTrialClasses: number;
   modalities: string[];
   pixKey: string | null;
 }
