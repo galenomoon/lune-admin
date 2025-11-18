@@ -85,6 +85,7 @@ export default function UpdateWorkedHourDialog({
       status: data.status,
       teacherId: data.teacherId,
       priceSnapshot: data.priceSnapshot,
+      newEnrollmentsCount: data.newEnrollmentsCount,
     };
     updateMutation.mutate(updateData);
   };

@@ -29,6 +29,7 @@ export interface UpdateWorkedHourData {
   teacherId?: string;
   priceSnapshot?: number;
   status?: "PENDING" | "DONE" | "CANCELED";
+  newEnrollmentsCount?: number;
 }
 
 export const updateWorkedHour = async (
