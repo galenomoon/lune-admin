@@ -3,10 +3,11 @@ import { WorkedHoursResponse, TeacherSalaryResponse } from "@/interfaces/worked-
 
 export const getWorkedHours = async (
   month: number,
-  year: number
+  year: number,
+  teacherId?: string
 ): Promise<WorkedHoursResponse> => {
   const { data } = await api.get("/api/v1/worked-hours", {
-    params: { month, year },
+    params: { month, year, ...(teacherId && { teacherId }) },
   });
   return data;
 };
