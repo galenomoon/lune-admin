@@ -1,15 +1,22 @@
 "use client";
 import { DataTable } from "@/components/ui/data-table";
-import React from "react";
+import React, { useState } from "react";
 import { columns } from "./constants/columns";
 import { getStudents } from "@/api/student";
 import { useQuery } from "@tanstack/react-query";
 import { CreateEnrollmentDialog } from "./_components/create-enrollment-dialog";
+import { EnrollmentFilters } from "./_components/enrollment-filters";
 
 export default function Enrollments() {
+  const [filters, setFilters] = useState<EnrollmentFilters>({
+    search: "",
+    planId: "",
+    modalityId: "",
+  });
+
   const { data: students, isLoading } = useQuery({
-    queryKey: ["students"],
-    queryFn: getStudents,
+    queryKey: ["students", filters],
+    queryFn: () => getStudents(filters),
   });
 
   return (
@@ -20,6 +27,7 @@ export default function Enrollments() {
           <CreateEnrollmentDialog />
         </section>
       </section>
+      <EnrollmentFilters filters={filters} onFiltersChange={setFilters} />
       <DataTable columns={columns} data={students || []} isLoading={isLoading} />
     </div>
   );
