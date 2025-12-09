@@ -36,13 +36,13 @@ interface WorkedHoursTableProps {
 }
 
 const dayOfWeekMap: Record<number, string> = {
-  0: "DOM",
-  1: "SEG",
-  2: "TER",
-  3: "QUA",
-  4: "QUI",
-  5: "SEX",
-  6: "SÁB",
+  0: "SEG",
+  1: "TER",
+  2: "QUA",
+  3: "QUI",
+  4: "SEX",
+  5: "SÁB",
+  6: "DOM",
 };
 
 const statusColors = {
@@ -117,11 +117,9 @@ export default function WorkedHoursTable({
   };
 
   const formatTime = (time: string) => {
-    const date = new Date(time);
-    return date.toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    const time_half = time.split("T");
+    const final_time = time_half[1].substring(0, 5);
+    return final_time;
   };
 
   const getDayOfWeek = (date: string) => {
