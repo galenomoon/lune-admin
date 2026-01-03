@@ -184,14 +184,6 @@ export const generateAndShareContract = async (
               }</div>
             </div>
             <div class="field">
-              <div class="field-label">Data de Nascimento</div>
-              <div class="field-value">${
-                enrollment.student?.birthDate
-                  ? formatDate(enrollment.student.birthDate)
-                  : "Não informado"
-              }</div>
-            </div>
-            <div class="field">
               <div class="field-label">Telefone</div>
               <div class="field-value">${
                 enrollment.student?.phone || "Não informado"
@@ -203,16 +195,6 @@ export const generateAndShareContract = async (
                 enrollment.student?.email || "Não informado"
               }</div>
             </div>
-            ${
-              enrollment.student?.instagram
-                ? `
-            <div class="field">
-              <div class="field-label">Instagram</div>
-              <div class="field-value">${enrollment.student.instagram}</div>
-            </div>
-            `
-                : ""
-            }
           </div>
           ${
             enrollment.student?.obs
