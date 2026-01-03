@@ -23,8 +23,6 @@ export default function TeacherSalaryTable({
   isLoading,
 }: TeacherSalaryTableProps) {
 
-  console.log(teachers);
-
   return (
     <Card>
       <CardHeader>
@@ -42,8 +40,20 @@ export default function TeacherSalaryTable({
               </TableHead>
               <TableHead>
                 <div className="flex items-center gap-2">
+                  <ListChecks className="h-4 w-4" />
+                  Modalidades
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4" />
+                  Valor Hora
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4" />
-                  Aulas Dadas
+                  Aulas Avulsas Realizadas
                 </div>
               </TableHead>
               <TableHead>
@@ -61,19 +71,13 @@ export default function TeacherSalaryTable({
               <TableHead>
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4" />
-                  Valor Hora
-                </div>
-              </TableHead>
-              <TableHead>
-                <div className="flex items-center gap-2">
-                  <DollarSign className="h-4 w-4" />
                   Total a Receber
                 </div>
               </TableHead>
               <TableHead>
                 <div className="flex items-center gap-2">
-                  <ListChecks className="h-4 w-4" />
-                  Modalidades
+                  <DollarSign className="h-4 w-4" />
+                  Total Faturado
                 </div>
               </TableHead>
               <TableHead className="text-center">
@@ -87,13 +91,13 @@ export default function TeacherSalaryTable({
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8">
+                <TableCell colSpan={9} className="text-center py-8">
                   Carregando dados...
                 </TableCell>
               </TableRow>
             ) : teachers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8">
+                <TableCell colSpan={9} className="text-center py-8">
                   <div className="text-gray-500">
                     <p className="text-lg font-medium">
                       Nenhum registro encontrado
@@ -112,6 +116,27 @@ export default function TeacherSalaryTable({
                       <UserCircle className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium">{teacher.teacherName}</span>
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {teacher.modalities.map((modality, index) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="bg-purple-900 text-purple-200 text-xs"
+                        >
+                          {modality}
+                        </Badge>
+                      ))}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-medium">
+                      R${" "}
+                      {teacher.priceHour.toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </span>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="bg-blue-900 text-blue-200">
@@ -138,14 +163,6 @@ export default function TeacherSalaryTable({
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <span className="font-medium">
-                      R${" "}
-                      {teacher.priceHour.toLocaleString("pt-BR", {
-                        minimumFractionDigits: 2,
-                      })}
-                    </span>
-                  </TableCell>
-                  <TableCell>
                     <span className="font-bold text-lg">
                       R${" "}
                       {teacher.totalToPay.toLocaleString("pt-BR", {
@@ -154,16 +171,27 @@ export default function TeacherSalaryTable({
                     </span>
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {teacher.modalities.map((modality, index) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="bg-purple-900 text-purple-200 text-xs"
-                        >
-                          {modality}
-                        </Badge>
-                      ))}
+                    <div className="flex flex-col">
+                      <span className="font-bold text-lg text-green-600 dark:text-green-400">
+                        R${" "}
+                        {teacher.totalRevenue.toLocaleString("pt-BR", {
+                          minimumFractionDigits: 2,
+                        })}
+                      </span>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        <div>
+                          Matrículas: R${" "}
+                          {teacher.revenueFromEnrollments.toLocaleString("pt-BR", {
+                            minimumFractionDigits: 2,
+                          })}
+                        </div>
+                        <div>
+                          Aulas Avulsas: R${" "}
+                          {teacher.revenueFromTrialClasses.toLocaleString("pt-BR", {
+                            minimumFractionDigits: 2,
+                          })}
+                        </div>
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell className="text-center">

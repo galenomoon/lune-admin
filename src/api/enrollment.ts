@@ -34,3 +34,17 @@ export const generateSignatureLink = async (enrollmentId: string) => {
   const { data } = await api.post(`/api/v1/contracts/generate-link/${enrollmentId}`);
   return data;
 };
+
+export const addEnrollment = async (
+  studentId: string,
+  enrollmentData: {
+    planId: string;
+    classId: string;
+    startDate: Date;
+    paymentDay: number;
+    durationInDays: number;
+  }
+) => {
+  const { data } = await api.post(`/api/v1/students/add/enrollment/${studentId}`, enrollmentData);
+  return data;
+};

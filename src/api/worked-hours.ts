@@ -3,10 +3,11 @@ import { WorkedHoursResponse, TeacherSalaryResponse } from "@/interfaces/worked-
 
 export const getWorkedHours = async (
   month: number,
-  year: number
+  year: number,
+  teacherId?: string
 ): Promise<WorkedHoursResponse> => {
   const { data } = await api.get("/api/v1/worked-hours", {
-    params: { month, year },
+    params: { month, year, ...(teacherId && { teacherId }) },
   });
   return data;
 };
@@ -29,6 +30,7 @@ export interface UpdateWorkedHourData {
   teacherId?: string;
   priceSnapshot?: number;
   status?: "PENDING" | "DONE" | "CANCELED";
+  newEnrollmentsCount?: number;
 }
 
 export const updateWorkedHour = async (
@@ -44,6 +46,11 @@ export const deleteWorkedHour = async (id: string): Promise<void> => {
 
 export const getPendingWorkedHours = async (): Promise<{ count: number }> => {
   const { data } = await api.get("/api/v1/worked-hours/pending/count");
+  return data;
+};
+
+export const createBatchWorkedHours = async (): Promise<{ count: number }> => {
+  const { data } = await api.get("/api/v1/worked-hours/cron/create-batch");
   return data;
 };
 
