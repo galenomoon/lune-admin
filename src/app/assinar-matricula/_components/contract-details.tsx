@@ -39,18 +39,6 @@ export default function ContractDetails({
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                Data de Nascimento
-              </p>
-              <p className="text-sm">
-                {enrollment.student?.birthDate
-                  ? new Date(enrollment.student.birthDate).toLocaleDateString(
-                      "pt-BR"
-                    )
-                  : "-"}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
                 Telefone
               </p>
               <p className="text-sm">
