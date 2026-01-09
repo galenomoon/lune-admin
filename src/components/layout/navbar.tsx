@@ -67,7 +67,7 @@ export function Navbar() {
     },
     {
       label: "Formulário Google",
-      href: "https://docs.google.com/forms/d/1JeYwhs0dvsde4HREYrlTReYCav0uzjsTgF1DzYfZIm4/edit",
+      href: "https://gatree.vercel.app/tree/forms",
       Icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
