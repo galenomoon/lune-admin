@@ -35,27 +35,26 @@ export function SiteHeader({
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
-      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6 pb-6">
-        <h1 className="text-2xl font-medium">Dashboard</h1>
-        <div className="ml-auto flex items-center gap-2">
-          <div className="flex items-center gap-2">
-            <Select
-              value={selectedMonth.toString()}
-              onValueChange={(value) => onMonthChange?.(parseInt(value))}
-            >
-              <SelectTrigger className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {months.map((month) => (
-                  <SelectItem key={month.value} value={month.value.toString()}>
-                    {month.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <div className="flex w-full items-center gap-1 lg:gap-2 lg:px-6 pb-6">
+        <h1 className="text-2xl font-medium hidden lg:block">Dashboard</h1>
+        <div className="lg:ml-auto flex justify-between w-full lg:justify-end items-center gap-2">
+          <Select
+            value={selectedMonth.toString()}
+            onValueChange={(value) => onMonthChange?.(parseInt(value))}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {months.map((month) => (
+                <SelectItem key={month.value} value={month.value.toString()}>
+                  {month.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-            {/* <Select 
+          {/* <Select 
               value={selectedYear.toString()} 
               onValueChange={(value) => onYearChange?.(parseInt(value))}
             >
@@ -70,7 +69,6 @@ export function SiteHeader({
                 ))}
               </SelectContent>
             </Select> */}
-          </div>
 
           <CreateEnrollmentDialog />
         </div>

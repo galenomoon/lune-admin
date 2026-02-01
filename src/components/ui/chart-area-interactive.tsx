@@ -365,7 +365,7 @@ export function ChartAreaInteractive({ chartData = [] }: ChartAreaInteractivePro
             {chartData ? (
               <Area
                 dataKey="revenue"
-                type="natural"
+                type="linear"
                 fill="url(#fillDesktop)"
                 stroke="var(--color-revenue)"
                 stackId="a"
@@ -374,14 +374,14 @@ export function ChartAreaInteractive({ chartData = [] }: ChartAreaInteractivePro
               <>
                 <Area
                   dataKey="mobile"
-                  type="natural"
+                  type="linear"
                   fill="url(#fillMobile)"
                   stroke="var(--color-mobile)"
                   stackId="a"
                 />
                 <Area
                   dataKey="desktop"
-                  type="natural"
+                  type="linear"
                   fill="url(#fillDesktop)"
                   stroke="var(--color-desktop)"
                   stackId="a"

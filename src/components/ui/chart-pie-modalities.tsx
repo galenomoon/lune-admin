@@ -10,9 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ChartContainer,
-} from "@/components/ui/chart";
+import { ChartContainer } from "@/components/ui/chart";
 
 const COLORS = [
   "#8884d8", // Azul
@@ -54,7 +52,23 @@ export function ChartPieModalities({ data }: ChartPieModalitiesProps) {
     color: COLORS[index % COLORS.length],
   }));
 
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { name: string; value: number; classes: number; enrollments: number; trialClasses: number; totalStudents: number; avgStudentsPerClass: string } }> }) => {
+  const CustomTooltip = ({
+    active,
+    payload,
+  }: {
+    active?: boolean;
+    payload?: Array<{
+      payload: {
+        name: string;
+        value: number;
+        classes: number;
+        enrollments: number;
+        trialClasses: number;
+        totalStudents: number;
+        avgStudentsPerClass: string;
+      };
+    }>;
+  }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
@@ -77,12 +91,19 @@ export function ChartPieModalities({ data }: ChartPieModalitiesProps) {
               </div>
               <div className="flex flex-col">
                 <span className="text-[0.70rem] uppercase text-muted-foreground">
-                  Total de Alunos: <span className="font-bold text-black">{data.totalStudents}</span>
+                  Total de Alunos:{" "}
+                  <span className="font-bold text-black">
+                    {data.totalStudents}
+                  </span>
                 </span>
-                <span className="font-bold">{data.enrollments} matriculados</span>
-                <span className="font-bold">{data.trialClasses} aulas avulsas</span>
+                <span className="font-bold">
+                  {data.enrollments} matriculados
+                </span>
+                <span className="font-bold">
+                  {data.trialClasses} aulas avulsas
+                </span>
               </div>
-             
+
               <div className="flex flex-col">
                 <span className="text-[0.70rem] uppercase text-muted-foreground">
                   Turmas Ativas
@@ -101,7 +122,9 @@ export function ChartPieModalities({ data }: ChartPieModalitiesProps) {
     <Card>
       <CardHeader>
         <CardTitle>Eficiência por Modalidade</CardTitle>
-        <CardDescription>Distribuição baseada na média de alunos por turma</CardDescription>
+        <CardDescription>
+          Distribuição baseada na média de alunos por turma
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer
@@ -113,7 +136,6 @@ export function ChartPieModalities({ data }: ChartPieModalitiesProps) {
               label: "Média Alunos/Turma",
             },
           }}
-          className="mx-auto max-h-[250px]"
         >
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -123,13 +145,20 @@ export function ChartPieModalities({ data }: ChartPieModalitiesProps) {
                 cy="50%"
                 labelLine={false}
                 label={({ name, percent }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
+                  `${name.length > 6 ? name.slice(0, 4)?.replaceAll('-', '') : name} ${(percent * 100).toFixed(0)}%`
                 }
-                outerRadius={80}
+                outerRadius={
+                  typeof window !== "undefined" && window.innerWidth <= 640
+                    ? 50
+                    : 100
+                }
                 dataKey="value"
               >
                 {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />

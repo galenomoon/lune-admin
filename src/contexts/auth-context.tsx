@@ -78,7 +78,13 @@ export default function AuthContextProvider({
     },
     onError: (err: unknown) => {
       console.error(err);
-      if (!(err instanceof AxiosError)) return;
+      if (!(err instanceof AxiosError)){
+        return toast.error("Algo deu errado, tente novamente mais tarde");
+      }
+
+      if (err?.response?.status === 400){
+        return toast.error("Email ou senha incorretos");
+      }
 
       if (err?.response?.status === 401) {
         return toast.error("Email ou senha incorretos");
@@ -86,6 +92,8 @@ export default function AuthContextProvider({
       if (err?.response?.status === 404) {
         return toast.error("Usuário não encontrado");
       }
+
+      return toast.error("Algo deu errado, tente novamente mais tarde");
     },
   });
 

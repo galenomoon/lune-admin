@@ -36,11 +36,11 @@ interface ChartBarModalitiesProps {
 const chartConfig = {
   enrollments: {
     label: "Matrículas",
-    color: "#8884d8",
+    color: "#BD14DF",
   },
   trialClasses: {
     label: "Aulas Avulsas",
-    color: "#82ca9d",
+    color: "#FFD400",
   },
 } satisfies ChartConfig;
 
@@ -80,10 +80,9 @@ export function ChartBarModalities({ data = [] }: ChartBarModalitiesProps) {
               axisLine={false}
               interval={0}
               tickFormatter={(value) =>
-                value.length > 7 ? value.slice(0, 7) : value
+                value.length > 5 ? value.slice(0, 5) : value
               }
             />
-            <YAxis tickLine={false} axisLine={false} />
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <ChartLegend content={<ChartLegendContent />} />
             <Bar
@@ -114,4 +113,3 @@ export function ChartBarModalities({ data = [] }: ChartBarModalitiesProps) {
     </Card>
   );
 }
-

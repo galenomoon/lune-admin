@@ -372,7 +372,6 @@ const EnrollmentTabExtra = () => {
                       <SelectContent>
                         <SelectItem value="5">Todo dia 5</SelectItem>
                         <SelectItem value="10">Todo dia 10</SelectItem>
-                        <SelectItem value="15">Todo dia 15</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

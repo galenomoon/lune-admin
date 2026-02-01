@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useContext } from "react";
-import { Settings } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,11 +18,6 @@ import { AuthContext } from "@/contexts/auth-context";
 
 export function Navbar() {
   const { currentUser, signOut } = useContext(AuthContext);
-  const router = useRouter();
-
-  const handleSettingsClick = () => {
-    router.push("/configuracoes");
-  };
 
   const handleLogout = () => {
     signOut();
@@ -100,7 +93,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="px-4 flex h-14 items-center">
+      <div className="px-4 flex h-14 items-center gap-2">
         {/* Search bar */}
         <div className="flex flex-1 items-center space-x-2">
           <NavigationCommand />
@@ -110,17 +103,6 @@ export function Navbar() {
         <div className="flex items-center space-x-2">
           {/* Theme toggle */}
           <ThemeButtonToggle />
-
-          {/* Settings */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleSettingsClick}
-            title="Configurações (⌘S)"
-          >
-            <Settings className="h-4 w-4" />
-            <span className="sr-only">Configurações</span>
-          </Button>
 
           {/* User profile */}
           <DropdownMenu>
