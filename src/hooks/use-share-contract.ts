@@ -48,6 +48,15 @@ export const generateAndShareContract = async (
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Contrato de Matrícula - ${enrollment.plan?.name}</title>
+         <p style="margin-top: 10px; font-size: 12px; color: #6b7280;">
+            Data de geração: ${new Date().toLocaleDateString("pt-BR", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
         <style>
           * {
             margin: 0;
