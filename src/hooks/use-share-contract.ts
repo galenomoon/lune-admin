@@ -8,11 +8,29 @@ export const generateAndShareContract = async (
   enrollment: ContractEnrollmentData
 ) => {
   const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
+    // Verifica se a data está no formato "dd/MM/yyyy" (vindo de convertToContractData)
+    const parts = date.split("/");
+    if (parts.length === 3) {
+      const [day, month, year] = parts;
+      const parsed = new Date(Number(year), Number(month) - 1, Number(day));
+      if (!isNaN(parsed.getTime())) {
+        return parsed.toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        });
+      }
+    }
+    // Fallback para formato ISO ou outros
+    const parsed = new Date(date);
+    if (!isNaN(parsed.getTime())) {
+      return parsed.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      });
+    }
+    return date;
   };
 
   const formatCurrency = (value: number) => {
@@ -23,7 +41,6 @@ export const generateAndShareContract = async (
   };
 
   const generateContractHTML = () => {
-    console.log(enrollment);
     return `
       <!DOCTYPE html>
       <html lang="pt-BR">
@@ -82,8 +99,18 @@ export const generateAndShareContract = async (
           
           .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
+          }
+          
+          .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+          }
+          
+          .full-width {
+            grid-column: 1 / -1;
           }
           
           .field {
@@ -92,27 +119,34 @@ export const generateAndShareContract = async (
           
           .field-label {
             font-weight: 600;
-            color: #374151;
-            font-size: 14px;
+            color: #6b7280;
+            font-size: 13px;
             margin-bottom: 3px;
           }
           
           .field-value {
             color: #1f2937;
             font-size: 14px;
+            font-weight: 500;
           }
           
           .highlight {
-            background: #fef3c7;
+            background: #f9fafb;
             padding: 15px;
-            border-radius: 6px;
-            border-left: 4px solid #f59e0b;
+            border-radius: 8px;
             margin: 20px 0;
           }
           
           .highlight h3 {
-            color: #92400e;
+            color: #1f2937;
             margin-bottom: 10px;
+            font-size: 18px;
+          }
+          
+          .price-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #059669;
           }
           
           .signature-section {
@@ -131,22 +165,51 @@ export const generateAndShareContract = async (
           .terms {
             margin-top: 30px;
             padding: 20px;
-            background: #f3f4f6;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
             border-radius: 8px;
           }
           
-          .terms h3 {
+          .terms h2 {
+            font-size: 20px;
             color: #1f2937;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
+          }
+
+          .terms .terms-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 20px;
           }
           
-          .terms ul {
-            padding-left: 20px;
+          .terms section {
+            margin-bottom: 16px;
           }
-          
-          .terms li {
+
+          .terms section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
             margin-bottom: 8px;
-            color: #374151;
+          }
+
+          .terms section p {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 6px;
+            line-height: 1.5;
+          }
+
+          .terms section ul {
+            padding-left: 20px;
+            list-style-type: disc;
+          }
+
+          .terms section ul li {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 4px;
+            line-height: 1.5;
           }
           
           .footer {
@@ -168,6 +231,7 @@ export const generateAndShareContract = async (
           <p>Lune - Escola de Dança</p>
         </div>
 
+        <!-- Detalhes da Matrícula -->
         <div class="section">
           <h2>Dados do Aluno</h2>
           <div class="grid">
@@ -195,17 +259,27 @@ export const generateAndShareContract = async (
                 enrollment.student?.email || "Não informado"
               }</div>
             </div>
+            ${
+              enrollment.student?.instagram
+                ? `
+            <div class="field">
+              <div class="field-label">Instagram</div>
+              <div class="field-value">${enrollment.student.instagram}</div>
+            </div>
+            `
+                : ""
+            }
+            ${
+              enrollment.student?.obs
+                ? `
+            <div class="field full-width">
+              <div class="field-label">Observações</div>
+              <div class="field-value">${enrollment.student.obs}</div>
+            </div>
+            `
+                : ""
+            }
           </div>
-          ${
-            enrollment.student?.obs
-              ? `
-          <div class="field">
-            <div class="field-label">Observações</div>
-            <div class="field-value">${enrollment.student.obs}</div>
-          </div>
-          `
-              : ""
-          }
         </div>
 
         <div class="section">
@@ -237,10 +311,18 @@ export const generateAndShareContract = async (
             </div>
             <div class="field">
               <div class="field-label">Valor Mensal</div>
+              <div class="field-value" style="color: #059669;">
+                ${
+                  enrollment.plan?.price
+                    ? formatCurrency(enrollment.plan.price)
+                    : "Não informado"
+                }
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Descrição do Plano</div>
               <div class="field-value">${
-                enrollment.plan?.price
-                  ? formatCurrency(enrollment.plan.price)
-                  : "Não informado"
+                enrollment.plan?.description || "Sem descrição"
               }</div>
             </div>
             <div class="field">
@@ -250,18 +332,9 @@ export const generateAndShareContract = async (
               } de cada mês</div>
             </div>
           </div>
-          ${
-            enrollment.plan?.description
-              ? `
-          <div class="field">
-            <div class="field-label">Descrição do Plano</div>
-            <div class="field-value">${enrollment.plan.description}</div>
-          </div>
-          `
-              : ""
-          }
         </div>
 
+        <!-- Dados da Matrícula comentado temporariamente (datas de início e término incorretas)
         <div class="section">
           <h2>Dados da Matrícula</h2>
           <div class="grid">
@@ -270,7 +343,7 @@ export const generateAndShareContract = async (
               <div class="field-value">${
                 enrollment.startDate
                   ? formatDate(enrollment.startDate)
-                  : "Não informado"
+                  : "-"
               }</div>
             </div>
             <div class="field">
@@ -278,28 +351,29 @@ export const generateAndShareContract = async (
               <div class="field-value">${
                 enrollment.endDate
                   ? formatDate(enrollment.endDate)
-                  : "Não informado"
+                  : "-"
               }</div>
             </div>
-            <div class="field">
-              <div class="field-label">Status</div>
-              <div class="field-value">${
-                enrollment.status === "active"
-                  ? "Ativo"
-                  : enrollment.status === "pending"
-                  ? "Pendente"
-                  : "Cancelado"
-              }</div>
+            ${
+              enrollment.signature
+                ? `
+            <div class="field full-width">
+              <div class="field-label">Status da Assinatura</div>
+              <div class="field-value" style="color: #059669;">✓ Contrato já assinado</div>
             </div>
+            `
+                : ""
+            }
           </div>
         </div>
+        -->
 
         <div class="highlight">
           <h3>Resumo Financeiro</h3>
-          <div class="grid">
+          <div class="grid-2">
             <div class="field">
               <div class="field-label">Valor da Mensalidade</div>
-              <div class="field-value" style="font-size: 18px; font-weight: bold; color: #059669;">
+              <div class="field-value price-value">
                 ${
                   enrollment.plan?.price
                     ? formatCurrency(enrollment.plan.price)
@@ -316,40 +390,100 @@ export const generateAndShareContract = async (
           </div>
         </div>
 
+        <!-- Assinatura Digital -->
         <div class="signature-section">
           <h3>Assinatura Digital</h3>
           ${
             enrollment.signature
               ? `<div style="margin: 20px 0;">
               <p style="color: #059669; font-weight: 600; margin-bottom: 15px;">✓ Contrato assinado digitalmente</p>
-                <img src="${enrollment.signature}" alt="Assinatura" style="max-width: 400px; height: 100px; display: block; border: 2px solid #d1d5db; border-radius: 8px; padding: 10px; background: white; display: inline-block;" />
+                <img src="${enrollment.signature}" alt="Assinatura" style="max-width: 400px; height: 100px; border: 2px solid #d1d5db; border-radius: 8px; padding: 10px; background: white; display: inline-block;" />
             </div>`
               : '<p style="color: #dc2626;">⚠ Contrato pendente de assinatura</p>'
           }
-          <p style="margin-top: 10px; font-size: 12px; color: #6b7280;">
-            Data de geração: ${new Date().toLocaleDateString("pt-BR", {
-              day: "2-digit",
-              month: "long",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </p>
+         
         </div>
 
+        <!-- Termos e Condições -->
         <div class="terms">
-          <h3>Termos e Condições</h3>
-          <ul>
-            <li>O pagamento deve ser efetuado até o dia ${
+          <h2>Termos e Condições do Contrato</h2>
+          <p class="terms-subtitle">Leia atentamente todas as cláusulas antes de confirmar sua matrícula.</p>
+
+          <section>
+            <h3>1. Objeto do Contrato</h3>
+            <p>O presente contrato tem como objeto a prestação de serviços educacionais na área de dança, de acordo com a modalidade e o plano contratados pelo aluno.</p>
+          </section>
+
+          <section>
+            <h3>2. Vigência e Renovação</h3>
+            <p>A vigência do contrato acompanha o plano selecionado e sua renovação ocorrerá de forma automática, salvo manifestação expressa do aluno com antecedência mínima de 30 (trinta) dias.</p>
+          </section>
+
+          <section>
+            <h3>3. Pagamento</h3>
+            <p>As mensalidades deverão ser pagas até o dia ${
               enrollment.paymentDay || 5
-            } de cada mês.</li>
-            <li>Em caso de atraso no pagamento, será cobrada multa de 2% ao mês.</li>
-            <li>O cancelamento deve ser solicitado com 30 dias de antecedência.</li>
-            <li>Faltas não justificadas não dão direito a reposição de aulas.</li>
-            <li>O aluno deve respeitar as normas de convivência da escola.</li>
-            <li>Este contrato é válido pelo período especificado nas datas de início e término.</li>
-            <li>A renovação do contrato é automática, desde que o aluno continue matriculado na escola.</li>
-          </ul>
+            } de cada mês. Em caso de atraso, o aluno deverá comunicar imediatamente a direção do Estúdio Lune.</p>
+            <p>Será aplicada multa moratória de 5% (cinco por cento) sobre o valor da mensalidade por dia de atraso. Após 15 (quinze) dias de inadimplência, a matrícula poderá ser suspensa.</p>
+          </section>
+
+          <section>
+            <h3>4. Frequência e Assiduidade</h3>
+            <p>O aluno compromete-se a manter frequência regular nas aulas. A ausência, independentemente do motivo, não gera direito a abatimento, reposição ou reembolso da mensalidade.</p>
+            <p>Aulas canceladas por iniciativa do professor ou da instituição deverão ser repostas, respeitando a disponibilidade da grade e do estúdio.</p>
+          </section>
+
+          <section>
+            <h3>5. Cancelamento</h3>
+            <p>O cancelamento deverá ser solicitado por escrito com antecedência mínima de 30 (trinta) dias. Na ausência desse aviso prévio, será cobrada a mensalidade subsequente.</p>
+            <p><strong>Multa por rescisão antecipada:</strong></p>
+            <ul>
+              <li><strong>Plano Trimestral:</strong> multa equivalente a 1 (uma) mensalidade.</li>
+              <li><strong>Plano Semestral:</strong> multa equivalente a 1,5 (uma e meia) mensalidade.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>6. Recessos</h3>
+            <p>O estúdio realizará recesso no final de cada ano. Para alunos com planos trimestrais e semestrais, o pagamento permanece inalterado, pois tais planos referem-se ao período contratado, e não ao número de aulas ofertadas mensalmente.</p>
+            <p>Alunos do plano mensal que optarem por cancelar antes do recesso não têm garantia de vaga no retorno, salvo se efetuarem a pré-matrícula ao final do ano.</p>
+            <p>No meio do ano, o estúdio poderá realizar um recesso adicional de até 2 (duas) semanas.</p>
+          </section>
+
+          <section>
+            <h3>7. Responsabilidades</h3>
+            <p><strong>Do aluno:</strong></p>
+            <p>O aluno é responsável por sua segurança e cuidados pessoais durante as atividades. A instituição não se responsabiliza por perdas ou danos de objetos pessoais.</p>
+            <p><strong>Do estúdio:</strong></p>
+            <p>O estúdio assegura a oferta de espaço adequado e equipamentos necessários para o desenvolvimento das aulas.</p>
+          </section>
+
+          <section>
+            <h3>8. Apresentações</h3>
+            <p>No meio do ano, será realizada uma apresentação obrigatória, a fim de acompanhar o progresso dos alunos. Alterações de turma poderão ocorrer conforme desempenho.</p>
+            <p>O uso do uniforme oficial é obrigatório para participação. A ausência do uniforme impossibilita a apresentação.</p>
+            <p>Ao final do ano, o estúdio promove seu espetáculo anual, de participação opcional.</p>
+            <p>Alunos participantes deverão arcar com o figurino completo e taxa de participação. A não participação não impede a continuidade nas aulas.</p>
+          </section>
+
+          <section>
+            <h3>9. Equipe Competitiva Lune</h3>
+            <p><strong>Responsabilidades do aluno integrante:</strong></p>
+            <ul>
+              <li>O aluno deverá realizar os pagamentos referentes às aulas de sua modalidade, condicionamento físico e ensaios.</li>
+              <li>A presença é obrigatória em todas as atividades da equipe.</li>
+              <li>Após 3 (três) faltas não justificadas mediante comprovação, o aluno poderá ser desligado da equipe.</li>
+              <li>O figurino para competições é de responsabilidade do aluno.</li>
+              <li>O uniforme completo é obrigatório para aulas e competições.</li>
+              <li>O aluno deverá manter conduta exemplar e desempenho adequado.</li>
+              <li>Premiações em dinheiro não são previstas. Medalhas são pessoais, enquanto troféus permanecem no estúdio.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>10. Aceitação</h3>
+            <p>Ao confirmar este contrato, o aluno declara ciência, concordância e plena aceitação de todas as condições aqui estabelecidas.</p>
+          </section>
         </div>
 
         <div class="footer">
@@ -492,35 +626,42 @@ export const generateAndShareContract = async (
   };
 
   try {
-    // Verificar se o navegador suporta navigator.share
-    if (navigator.share) {
-      const pdfBlob = await generatePDF();
-      const fileName = `contrato-matricula-${enrollment.student?.firstName}-${
-        enrollment.student?.lastName
-      }-${new Date().toISOString().split("T")[0]}.pdf`;
+    // Gerar o PDF apenas uma vez
+    const pdfBlob = await generatePDF();
+    const fileName = `contrato-matricula-${enrollment.student?.firstName}-${
+      enrollment.student?.lastName
+    }-${new Date().toISOString().split("T")[0]}.pdf`;
 
+    // Verificar se o navegador suporta navigator.share com arquivos
+    if (navigator.share && navigator.canShare) {
       const file = new File([pdfBlob], fileName, { type: "application/pdf" });
 
-      await navigator.share({
+      const shareData = {
         title: "Contrato de Matrícula",
         text: `Contrato de matrícula de ${enrollment.student?.firstName} ${enrollment.student?.lastName}`,
         files: [file],
-      });
-    } else {
-      // Fallback: baixar o PDF
-      const pdfBlob = await generatePDF();
-      const url = URL.createObjectURL(pdfBlob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `contrato-matricula-${enrollment.student?.firstName}-${
-        enrollment.student?.lastName
-      }-${new Date().toISOString().split("T")[0]}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      };
+
+      if (navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        return;
+      }
     }
+
+    // Fallback: baixar o PDF
+    const url = URL.createObjectURL(pdfBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   } catch (error) {
+    // Ignorar erro de cancelamento do usuário (AbortError)
+    if (error instanceof Error && error.name === "AbortError") {
+      return;
+    }
     console.error("Erro ao compartilhar contrato:", error);
     throw error;
   }
